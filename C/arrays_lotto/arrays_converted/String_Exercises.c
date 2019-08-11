@@ -41,18 +41,18 @@ int main()
 
             case 3:
                 printf("Enter string (1):\n");
-                scanf("%s", &str1);
+                scanf("%s", str1);
                 printf("Enter string (2):\n");
-                scanf("%s", &str2);
+                scanf("%s", str2);
                 squeeze(str1, str2);
                 printf("\n");
                 break;
 
             case 4:
                 printf("Enter string (1):\n");
-                scanf("%s", &str1);
+                scanf("%s", str1);
                 printf("Enter sub string (2):\n");
-                scanf("%s", &str2);
+                scanf("%s", str2);
                 out = location(str1, str2);
                 printf("The index of sub string '%s' is %d", str2, out);
                 break;
@@ -194,6 +194,6 @@ int location (char* str1, char* str2)
             }
         }
     }
-    // printf("NOT FOUND");
+    /*printf("NOT FOUND");*/ 
     return -1;
 }
