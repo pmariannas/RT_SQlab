@@ -11,7 +11,7 @@ int location (char* str1, char* str2);
 int main()
 {
     unsigned int num=0; 
-    int length=32, i=9, out, task = 0;
+    int length=32, i=9, out;
     char binStr[32]; /* binary string */
     char str1[32]/* = "ABCDEF"*/;
     char str2[32]/* = "BKE"*/;
