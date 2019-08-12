@@ -61,7 +61,7 @@ int insertDA(Da_t* da, int num)
 void printDA(Da_t* da)
 {   
     int i=0;
-	if(da->index!=NULL)
+	if(da!=NULL)
 	{
     		for(i=0; i < da->index; i++)
 		{
