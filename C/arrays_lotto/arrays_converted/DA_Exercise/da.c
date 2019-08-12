@@ -56,15 +56,22 @@ int insertDA(Da_t* da, int num)
 void printDA(Da_t* da)
 {   
     int i=0;
-
-    for(i=0; i < da->capacity; i++)
-        {
-            printf("index[%i], value: %d\n", i, da->arr[i]);
-        }   
+	if(da->index!=NULL)
+	{
+    		for(i=0; i < da->index; i++)
+		{
+		    printf("index[%i], value: %d\n", i, da->arr[i]);
+		}  
+	}
 }
 
 void destroyDA(Da_t* da)
 {
-    free(da->arr);
-    free(da);
+	if(da!=NULL)
+	{
+		free(da->arr);
+		free(da);
+	}
+    
+    
 }
