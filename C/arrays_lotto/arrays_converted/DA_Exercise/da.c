@@ -29,7 +29,9 @@ Da_t* createDA(int capacity)
 
 int insertDA(Da_t* da, int num)
 {
-    int* temp = da->arr;
+	if(da->arr!=NULL)
+	{
+		int* temp = da->arr;
 
     
     if (da->index == da->capacity)
@@ -51,6 +53,9 @@ int insertDA(Da_t* da, int num)
 
 
     return *(da->arr);
+	}
+	
+    
 }
 
 void printDA(Da_t* da)
