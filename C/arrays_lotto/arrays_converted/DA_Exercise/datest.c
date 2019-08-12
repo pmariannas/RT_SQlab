@@ -11,18 +11,21 @@ int main()
     scanf("%d", &capacity);  
 
     da = createDA(capacity);
+    if(da!=NULL)
+    {
+        printf("Enter element to insert: \n (for exit from insert press 999)\n");
 
-    printf("Enter element to insert: \n (for exit from insert press 999)\n");
+        scanf("%d", &num);
+        while (num!=999)
+            {
+                value = insertDA(da, num);
+                printf("Enter element to insert:");
+                scanf("%d", &num);
+            }
 
-    scanf("%d", &num);
-    while (num!=999)
-        {
-            value = insertDA(da, num);
-            printf("Enter element to insert:");
-            scanf("%d", &num);
-        }
-
-    printDA(da);
-    destroyDA(da);
+        printDA(da);
+        destroyDA(da);
+    }
+    
     return 0;
 }
