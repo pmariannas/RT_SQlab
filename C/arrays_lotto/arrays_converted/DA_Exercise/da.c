@@ -19,6 +19,7 @@ Da_t* createDA(int capacity)
     if(da->arr == NULL)                     
     {
         printf("Error! memory not allocated.");
+    	free(da);
         exit(0);
     }
 
