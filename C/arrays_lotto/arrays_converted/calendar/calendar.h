@@ -22,7 +22,7 @@ AD_t* createAD(int capacity); /*create calendar*/
 MT_t* createMT(); /*create meeting*/
 int insertMeeting(AD_t* ad, MT_t* pMeeting); /*insert meeting in to calendar*/
 int deleteMeeting(AD_t* ad);
-MT_t* findMeeting(AD_t* ad);
+MT_t* findMeeting(AD_t* ad,float startFind);
 void printAD(AD_t* ad); /*print calendar*/
 void destroyAD(AD_t* ad); /*destroy pointers*/
 
