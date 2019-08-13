@@ -70,14 +70,14 @@ int insertMeeting(AD_t* ad, MT_t* pMeeting)
 {
     MT_t** temp;
     MT_t* checkExistStartTime;
-    
+    int valueCheckOverlap;
 
     if (ad == NULL || pMeeting ==NULL)
     {
         return -1;
     }
     
-    if(ad->index == 0) 
+    if(ad->index == 0) /*no meetings in calendar*/
     {
         ad->meetings[ad->index] = pMeeting;
         ad->index++;
@@ -95,25 +95,40 @@ int insertMeeting(AD_t* ad, MT_t* pMeeting)
         }
         else
         {
+            valueCheckOverlap = checkOverlap(ad, pMeeting);
+            if(valueCheckOverlap == 0)/*no overlap &&index==capacity*/
+            {
+                temp = ad->meetings;
+                temp = realloc(ad->meetings, sizeof(MT_t)*((ad->capacity)*2));
+                if(ad->meetings != NULL)
+                {
+                    ad->meetings = temp;
+                    ad->capacity *=2;
+                }
+                else 
+                {
+                    return -1;
+                }
+            }
+            else
+            {
+                return -1;
+            }
             
         }
         
-        temp = ad->meetings;
-        temp = realloc(ad->meetings, sizeof(MT_t)*((ad->capacity)*2));
-        if(ad->meetings != NULL)
-        {
-            ad->meetings = temp;
-            ad->capacity *=2;
-        }
-        else 
-        {
-            return -1;
-        }
     }
+    valueCheckOverlap = checkOverlap(ad, pMeeting);
+    if (valueCheckOverlap==0) /*no overlap*/
+    {
         ad->meetings[ad->index] = pMeeting;
         ad->index++;  
-
-    return 0;   
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }   
     }
     
 
@@ -123,6 +138,19 @@ int deleteMeeting(AD_t* ad)
 
 }
 
+int checkOverlap(AD_t* ad, MT_t* meetingToCheck)
+{
+     int i;
+
+    for ( i = 0 ; i < ad->index ; i++)
+    {
+        if(meetingToCheck->startT <= ad->meetings[i]->startT && meetingToCheck->endT > ad->meetings[i]->endT)
+        {   
+            return -1; /*overlap*/
+        }
+    }
+    return 0;/*no overlap*/
+}
 
 MT_t* findMeeting(AD_t* ad, float startFind)
 {
@@ -178,5 +206,5 @@ void destroyAD(AD_t* ad)
     free(ad->meetings);
     free(ad);
 
-    printf("DESTROY!\n");
+    printf("DESTROY!!!!!!!!!!!!!\n");
 }
