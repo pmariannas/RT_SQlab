@@ -122,9 +122,22 @@ int insertMeeting(AD_t* ad, MT_t* pMeeting)
 }
     
 
-int deleteMeeting(AD_t* ad)
+void deleteMeeting(AD_t* ad)
 {
-    return 0;
+    int i;
+	
+	if(ad == NULL)
+	{
+		return;
+	}
+	
+	for(i = 0; i < ad->index; i++)
+	{
+		free(ad->meetings[i]);
+	}
+	
+	free(ad->meetings);
+	free(ad);
 
 }
 
@@ -215,13 +228,17 @@ void destroyAD(AD_t* ad)
 }
 
 
-void loadFromFile(AD_t* da, char* fName)
+int loadFromFile(AD_t* da)
 {
-    FILE* fp = fopen(fName,"r");
+    FILE* fp = fopen("Calendar.txt","r");
     float st, et;
     int room;
     MT_t* mPtr;
-
+ 
+	if(da == NULL)
+	{
+		return -1;
+	}
     if(fp!=NULL)
     {
         while (1) 
@@ -239,19 +256,31 @@ void loadFromFile(AD_t* da, char* fName)
            
         }
     printf("HELLLLO\n");
-    fclose(fp);
+    if(fclose(fp) != 0)
+	{
+		return -1;
+	}
     }
 }
 
-void saveInFile(AD_t* ad, char* fName)
+int saveInFile(AD_t* ad)
 {
     int i=0;
-    FILE * fp = fopen(fName, "w");
+    FILE * fp = fopen("Calendar.txt", "w");
+	if (fp == NULL || ad == NULL)
+	{
+		return -1;
+	}
     for(i=0 ; i < ad->index ; i++)
     {
         fprintf(fp,"%.1f %.1f %d\n", ad->meetings[i]->startT,ad->meetings[i]->endT,ad->meetings[i]->room );
 
     }
-    fclose(fp);
+    if(fclose(fp) != 0)
+	{
+		return -1;
+	}
+	
+	return 0;
 
 }
