@@ -87,12 +87,16 @@ int main()
             case 5:
                 if (ad != NULL)
                 {
-                    pMeeting = findMeeting(ad);
+                    float startFind = 0;
+    
+                    printf("Enter start time you want to find:\n");
+                    scanf("%f", &startFind);
+                    pMeeting = findMeeting(ad, startFind);
                     if (pMeeting !=NULL)
                     {
-                        printf("%f", pMeeting->startT);
-                        printf("%f", pMeeting->endT);
-                        printf("%d", pMeeting->room);
+                        printf("start time: %.1f ", pMeeting->startT);
+                        printf("end time: %.1f ", pMeeting->endT);
+                        printf("room: %d ", pMeeting->room);
 
                     }
                 
