@@ -25,6 +25,8 @@ int deleteMeeting(AD_t* ad);
 MT_t* findMeeting(AD_t* ad,float startFind);
 void printAD(AD_t* ad); /*print calendar*/
 void destroyAD(AD_t* ad); /*destroy pointers*/
+int checkOverlap(AD_t* ad, MT_t* meetingToCheck);
+
 
 
 
