@@ -69,6 +69,7 @@ MT_t* createMT() /**/
 int insertMeeting(AD_t* ad, MT_t* pMeeting)
 {
     MT_t** temp;
+    MT_t* checkExistStartTime;
     
 
     if (ad == NULL || pMeeting ==NULL)
@@ -80,9 +81,23 @@ int insertMeeting(AD_t* ad, MT_t* pMeeting)
     {
         ad->meetings[ad->index] = pMeeting;
         ad->index++;
+        return 0;
     }
     else if (ad->index == ad->capacity) /*realloc*/
     {
+        /*check if exist start time*/
+        checkExistStartTime = findMeeting(ad, pMeeting->startT);
+        
+        if (checkExistStartTime!=NULL)
+        {
+            printf("cannot create this meeting\n");
+            return -1;
+        }
+        else
+        {
+            
+        }
+        
         temp = ad->meetings;
         temp = realloc(ad->meetings, sizeof(MT_t)*((ad->capacity)*2));
         if(ad->meetings != NULL)
@@ -109,13 +124,14 @@ int deleteMeeting(AD_t* ad)
 }
 
 
-MT_t* findMeeting(AD_t* ad)
+MT_t* findMeeting(AD_t* ad, float startFind)
 {
     int i;
-    float startFind = 0;
+    /*float startFind = 0;
     
     printf("Enter start time you want to find:\n");
-    scanf("%f", &startFind);
+    scanf("%f", &startFind);*/
+    
 
     for ( i = 0 ; i < ad->index ; i++)
     {
@@ -162,5 +178,5 @@ void destroyAD(AD_t* ad)
     free(ad->meetings);
     free(ad);
 
-    printf("DESTROY!!!!!!!!!!!!!\n");
+    printf("DESTROY!\n");
 }
