@@ -9,7 +9,6 @@ int main()
     AD_t* ad = NULL;
     MT_t* pMeeting = NULL;
 	FILE * fp;
-    char* fName = "Calendar";
 
 
     printf("Enter capacity of Appointment Diary:");
@@ -26,7 +25,7 @@ int main()
         printf("Calendar created.\n");
     }
 
-    loadFromFile(ad, fName);
+    loadFromFile(ad);
 
     
    
@@ -35,10 +34,10 @@ int main()
     while(i != 0)
     {
     printf("\n\nEnter number of function:\n ");
-    printf("1-Create AD \n 2-Create meeting \n ");
+    printf("2-Create meeting \n ");
     printf("3-Insert appointment into AD \n 4-Remove appointment from AD \n ");
     printf("5-Find appointment in AD \n 6-Print AD AD \n 7-Destroy \n ");
-    printf("8-Load From File \n 9-save file \n 0-exit \n");
+    printf("0-exit \n");
 
     scanf("%d",&i);
 
@@ -154,7 +153,7 @@ int main()
 
             case 7:
 
-                saveInFile(ad, fName);
+                saveInFile(ad);
 
                 if(ad != NULL)
                 {
@@ -167,12 +166,12 @@ int main()
                 break;
 
             case 8:
-                loadFromFile(ad, fName);
+                loadFromFile(ad);
 
                 break;
 
             case 9:
-                saveInFile(ad, fName);
+                saveInFile(ad);
             
                 break;
 
