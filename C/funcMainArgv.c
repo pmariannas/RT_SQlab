@@ -25,13 +25,13 @@ int main(int argc, char *argv[])
 
 }
 
-int isNumber(char* arg1)
+int isNumber(char* str)
 {
-    int len1 = strlen(arg1);  
+    int len = strlen(str);  
     int count=0, i;
-    for(i=0 ; i<len1; i++)
+    for(i=0 ; i<len; i++)
        {
-           if(isdigit(arg1[i]))
+           if(isdigit(str[i]))
            {
                count++;
            }
@@ -41,19 +41,16 @@ int isNumber(char* arg1)
            }
            
        }
-    if(count==len1)
-    {
-        return 0;
-    } 
+   return 0;
 }
 
-int isString(char* arg1)
+int isString(char* str)
 {
-    int len1 = strlen(arg1);  
+    int len = strlen(str);  
     int count=0, i;
-    for(i=0 ; i<len1; i++)
+    for(i=0 ; i<len; i++)
        {
-           if(isalpha(arg1[i]))
+           if(isalpha(str[i]))
            {
                count++;
            }
@@ -61,11 +58,6 @@ int isString(char* arg1)
            {
                return -1;
            }
-           
        }
-    if(count==len1)
-    {
-        return 0;
-
-    } 
+    return 0;
 }
