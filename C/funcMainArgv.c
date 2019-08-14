@@ -4,16 +4,11 @@
 
 int main(int argc, char *argv[])
 {
-    char* arg1 = argv[1] ;
+    char* arg1 = argv[1];
     char* arg2 = argv[2];
-    int valueReturn = 0;
-    int i, count1=0, count2=0;
-    int len1 = strlen(arg1);  
-    int len2 = strlen(arg2);  
 
     if(argc == 3)     
     {
-        valueReturn = isNumber(arg1);
         if(isNumber(arg1)==0 && isString(arg2)==0 )
         {
             printf("age:%d name:%s\n",  atoi(arg1), arg2);
@@ -24,35 +19,8 @@ int main(int argc, char *argv[])
         }
         else 
         {
-            printf("error");
-        
-           
-        }
-        isString(arg1);
-       /*
-       for(i=0 ; i<len1; i++)
-       {
-           if(isdigit(arg1[i]))
-           {
-               count1++;
-           }
-       }
-       for(i=0 ; i<len2; i++)
-       {
-           if(isalpha(arg2[i]))
-           {
-               count2++;
-           }
-       }
-
-       if(count1==len1&&count2==len2)
-       {
-           printf("age:%d name:%s\n",  atoi(arg1), arg2);
-
-       }
-           
-       */
-        
+            printf("error\n");    
+        }        
     }
 
 }
@@ -67,17 +35,18 @@ int isNumber(char* arg1)
            {
                count++;
            }
+           else
+           {
+               return -1;
+           }
+           
        }
     if(count==len1)
     {
         return 0;
-
-    }
-    else
-    {
-        return -1;
-    }
+    } 
 }
+
 int isString(char* arg1)
 {
     int len1 = strlen(arg1);  
@@ -88,14 +57,15 @@ int isString(char* arg1)
            {
                count++;
            }
+           else
+           {
+               return -1;
+           }
+           
        }
     if(count==len1)
     {
         return 0;
 
-    }
-    else
-    {
-        return -1;
-    }
+    } 
 }
