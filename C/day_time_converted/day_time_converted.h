@@ -22,5 +22,8 @@ int checkLeapYear(int year);
 cTime_t* setTime();
 int checkDate(int d,int m,int y);
 cDate_t* addTimeToTime(cDate_t* curTime, cTime_t* newTime);
+cDate_t* setNewDate(cDate_t* date);
+int dayOfYear(cDate_t* date);
+char* monthName(int month);
 
 #endif
