@@ -45,8 +45,8 @@ void printDate(cDate_t* date)
     printf("1: ‫‪European‬ dd/mm/yyyy  \n");
     printf("2: ‫‪American‬‬ mm/dd/yyyy \n");
     printf("3: ‫‪European‬‬ dd/Dec/yyyy\n");
-    printf("4: ‫‪European‬ dd/mm/yyyy hh:mm:ss \n");
-    printf("5: ‫‪American‬‬ mm/dd/yyyy hh:mm:ss \n");
+    printf("4: ‫‪‬dd/mm/yyyy hh:mm:ss \n");
+    printf("5: am/pm -> hh:mm:ss \n");
 
     scanf("%d", &i);
     switch(i)
@@ -66,17 +66,23 @@ void printDate(cDate_t* date)
                                                             date->currTime->cMin, date->currTime->cSec);
             break;
         case 5:
-            printf("date in struct: %d/%s/%d  %d:%d:%d\n",  date->cDay, mon[date->cMon-1], date->cYear,
-                                                            date->currTime->cHour, 
-                                                            date->currTime->cMin, date->currTime->cSec);
+            if(date->currTime->cHour > 1 && date->currTime->cHour<12) /*am*/
+            {
+                printf("time in struct: %d:%d:%d a.m\n",    date->currTime->cHour, 
+                                                    date->currTime->cMin, 
+                                                    date->currTime->cSec);
+            }
+            else 
+            {
+              printf("time in struct: %d:%d:%d p.m\n",    date->currTime->cHour-12, 
+                                                    date->currTime->cMin, 
+                                                    date->currTime->cSec);  /*pm*/
+            }
+            
             break;
         
         }
-
     }
-    
-
-
 }
 
 int checkLeapYear(int year)
@@ -152,12 +158,13 @@ int checkDate(int d, int m, int y)
 {
 
      if( (y>1900)&&((checkLeapYear(y) == 0 && m == 2 && d > 0 && d <= 28)       ||
-                        (checkLeapYear(y) == -1 && m == 2 && d > 0 && d <= 29)      ||
+         (y>1900)&&(checkLeapYear(y) == -1 && m == 2 && d > 0 && d <= 29)       ||
                         m == 4 && d >0 && d <= 30 || m == 6 && d >0 && d <= 30      ||
                         m == 9 && d >0 && d <= 30 || m == 11 && d >0 && d <= 30     ||
                         m == 1 && d >0 && d <= 31 || m == 3 && d >0 && d <= 31      ||
                         m == 7 && d >0 && d <= 31 || m == 8 && d >0 && d <= 31     ||
-                        m == 10 && d >0 && d <= 31|| m == 12 && d >0 && d <= 31   ))
+                        m == 10 && d >0 && d <= 31|| m == 12 && d >0 && d <= 31||
+                        m == 5 && d >0 && d <= 31   ))
                         
                         {
                             return 0;
@@ -172,13 +179,10 @@ int checkDate(int d, int m, int y)
 cDate_t* addTimeToTime(cDate_t* curDate, cTime_t* newTime)
 {
     int day=0, s=0, m=0, h=0;
-    printf("!!!!!!!!!!\n");
     
     if(time!=NULL)
     {
         int h=0, min=0, sec=0;
-        printf("!!!!!!!!!!!curDate->currTime->cSec : %d\n", curDate->currTime->cSec);
-        printf("!!!!!!!!!!!newTime->cSec: %d\n", newTime->cSec);
 
         s = curDate->currTime->cSec + newTime->cSec;
         if(s>60)
@@ -200,8 +204,6 @@ cDate_t* addTimeToTime(cDate_t* curDate, cTime_t* newTime)
             day=1;
             h = h%24;
         }
-
-        printf("!!!!!!!!!!!day:%d h: %d  m:%d  s:%d\n",day, h,m,s);
 
         /*check if d>0 change date*/
         if(day>0)
@@ -247,4 +249,97 @@ cDate_t* addTimeToTime(cDate_t* curDate, cTime_t* newTime)
 cDate_t* addDateToDate(cDate_t* curDate, cDate_t* newDate)
 {
     return 0;
+}
+
+cDate_t* setNewDate(cDate_t* date)
+{
+    int d, m, y;
+
+    if(date!=NULL)
+    {
+        printf("Set New Date\n");
+        while (1)
+        {
+            printf("enter day:\n");
+            scanf("%d", &d);
+            printf("enter month:\n");
+            scanf("%d", &m);
+            printf("enter year:\n");
+            scanf("%d", &y);
+            
+            if(checkDate(d,m,y)==0)
+            {
+                break;
+            }
+            
+            printf("TIME INCCORECT \n");
+        }
+        
+        date->cDay = d;
+        date->cMon = m;
+        date->cYear = y;
+        return date;
+        }
+}
+
+int dayOfYear(cDate_t* date)
+{
+    int day, mon, year, days_in_feb = 28, doy;    
+ 
+    day = date->cDay;
+    mon = date->cMon;
+    year = date->cYear;
+    
+    doy = day;
+    
+    if( (year % 4 == 0 && year % 100 != 0 ) || (year % 400 == 0) )
+    {
+        days_in_feb = 29;
+    }
+ 
+    switch(mon)
+    {
+        case 2:
+            doy += 31;
+            break;
+        case 3:
+            doy += 31+days_in_feb;
+            break;
+        case 4:
+            doy += 31+days_in_feb+31;
+            break;
+        case 5:
+            doy += 31+days_in_feb+31+30;
+            break;
+        case 6:
+            doy += 31+days_in_feb+31+30+31;
+            break;
+        case 7:
+            doy += 31+days_in_feb+31+30+31+30;
+            break;            
+        case 8:
+            doy += 31+days_in_feb+31+30+31+30+31;
+            break;
+        case 9:
+            doy += 31+days_in_feb+31+30+31+30+31+31;
+            break;
+        case 10:
+            doy += 31+days_in_feb+31+30+31+30+31+31+30;            
+            break;            
+        case 11:
+            doy += 31+days_in_feb+31+30+31+30+31+31+30+31;            
+            break;                        
+        case 12:
+            doy += 31+days_in_feb+31+30+31+30+31+31+30+31+30;            
+            break;                                    
+    }
+    return doy;
+}
+
+char* monthName(int month)
+{
+    char* monthArr[12]= {   "January","February","March","April","May",
+                            "June","July","August","September",
+                             "October","November","December"};
+    return monthArr[month-1];
 }
