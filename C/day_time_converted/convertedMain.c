@@ -5,15 +5,20 @@
 int main()
 {
     int d,m,y,i,h,min,sec;
+    int doy; /*day of year*/
+    char* leap[4];
+    char* monName[12];
 	cDate_t* date;
     cTime_t* time;
 	
 	while(1)
 	{
 		printf("1: Create Day \n");
-		printf("2: Print date \n");
+		printf("2: Print date and time \n");
 		printf("3: Set New Time \n");
 		printf("4: Addition of 2 times(current and new)\n");
+        printf("5: Set New Date \n");
+        printf("6: functions to retrieve day, month, day of Year \n");
 		
 		scanf("%d", &i);
 		switch(i)
@@ -21,22 +26,21 @@ int main()
 			case 1:
                 while (1)
                 {
-                    printf("PLEASE ENTER DATE \n");
+                    printf("CREATE - ENTER DATE \n");
                     printf("enter day:\n");
                     scanf("%d", &d);
                     printf("enter month:\n");
                     scanf("%d", &m);
                     printf("enter year:\n");
                     scanf("%d", &y);
-                    if(checkDate(d,m,y)==0)
+                    if(checkDate(d,m,y)==0) /*function check if date correct */
                     {
                         break;
                     }
-                   
                     printf("DATE INCCORECT \n");
                 }
                 
-                date = createDate(d,m,y);
+                date = createDate(d,m,y); /*call to create function*/
                 if (date==NULL)
                 {
                     printf("error in creating date\n"); 
@@ -77,7 +81,32 @@ int main()
                 time->cMin = m;
                 time->cSec =sec;
                 addTimeToTime(date, time);
-				break;				
+				break;
+            
+            case 5:
+                setNewDate(date);
+                break;	
+            
+            case 6:
+                doy = dayOfYear(date);
+                
+                if(checkLeapYear(date->cYear)==0)
+                {
+                    *leap = "yes";
+                }
+                else
+                {
+                    *leap = "no";
+                }
+            
+                printf ("current day in month : %d \n",date->cDay );
+                printf ("current month : %d \n",date->cMon)    ;
+                printf ("current year : %d \n",date->cYear )    ; 
+                printf ("day of year : %d \n",doy)    ;
+                printf ("is year leap or not : %s \n", *leap)  ; 
+                printf ("name of month : %s \n\n\n", monthName(date->cMon))  ;
+                       
+                break;			
 		}
 	}
 	
