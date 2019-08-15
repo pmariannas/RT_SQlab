@@ -54,11 +54,19 @@ int main()
 				break;
 				
 			case 2:			
-                printDate(date);
+                if(date!=NULL)
+                {
+                    printDate(date);
+                }
+                else 
+                {
+                    printf("CREATE DATE BEFORE\n");
+                }
+                
 				break;
 				
 			case 3:
-                if(date->currTime==NULL)
+                if(date==NULL)
                 {
                     printf("CREATE DATE BEFORE\n");
                 }
@@ -69,42 +77,69 @@ int main()
                 
 				break;
             case 4:
-                printf("enter time to add to current time: \n");
-                time = malloc(sizeof(cTime_t*));
-                printf("enter hour:\n");
-                scanf("%d", &h);
-                printf("enter min:\n");
-                scanf("%d", &m);
-                printf("enter sec:\n");
-                scanf("%d", &sec);
-                time->cHour = h;
-                time->cMin = m;
-                time->cSec =sec;
-                addTimeToTime(date, time);
-				break;
-            
-            case 5:
-                setNewDate(date);
-                break;	
-            
-            case 6:
-                doy = dayOfYear(date);
-                
-                if(checkLeapYear(date->cYear)==0)
+                if(date==NULL)
                 {
-                    *leap = "yes";
+                    printf("CREATE DATE BEFORE\n");
                 }
                 else
                 {
-                    *leap = "no";
+                    printf("enter time to add to current time: \n");
+                    time = malloc(sizeof(cTime_t*));
+                    printf("enter hour:\n");
+                    scanf("%d", &h);
+                    printf("enter min:\n");
+                    scanf("%d", &m);
+                    printf("enter sec:\n");
+                    scanf("%d", &sec);
+                    time->cHour = h;
+                    time->cMin = m;
+                    time->cSec =sec;
+                    addTimeToTime(date, time);
                 }
+                
+				break;
             
-                printf ("current day in month : %d \n",date->cDay );
-                printf ("current month : %d \n",date->cMon)    ;
-                printf ("current year : %d \n",date->cYear )    ; 
-                printf ("day of year : %d \n",doy)    ;
-                printf ("is year leap or not : %s \n", *leap)  ; 
-                printf ("name of month : %s \n\n\n", monthName(date->cMon))  ;
+            case 5:
+                if(date==NULL)
+                {
+                    printf("CREATE DATE BEFORE\n");
+
+                }
+                else
+                {
+                    setNewDate(date);
+                }
+                
+                break;	
+            
+            case 6:
+                if(date==NULL)
+                {
+                    printf("CREATE DATE BEFORE\n");
+
+                }
+                else
+                {
+                    doy = dayOfYear(date);
+                
+                    if(checkLeapYear(date->cYear)==0)
+                    {
+                        *leap = "yes";
+                    }
+                    else
+                    {
+                        *leap = "no";
+                    }
+                
+                    printf ("current day in month : %d \n",date->cDay );
+                    printf ("current month : %d \n",date->cMon)    ;
+                    printf ("current year : %d \n",date->cYear )    ; 
+                    printf ("day of year : %d \n",doy)    ;
+                    printf ("is year leap or not : %s \n", *leap)  ; 
+                    printf ("name of month : %s \n\n\n", monthName(date->cMon))  ;
+
+                }
+                
                        
                 break;			
 		}
