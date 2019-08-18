@@ -21,7 +21,7 @@ static void int2Bin(int num)
 		}
 	}
 }
-int callFunc(bitFunc func, BitMap* bm, int n)
+int callFunc(bitFunc func, bitMap_t* bm, int n)
 {
 	return func(bm, n);	
 }
