@@ -27,7 +27,7 @@ int main()
             case 1:
                 printf("enter bit to on: \n");
                 scanf("%u", &n);
-                result =  callFunc(func[0], bm, n));
+                result =  callFunc(func[0], bm, n);
                 if(result == -1)
                 {
                     printf("error");
@@ -36,7 +36,7 @@ int main()
             case 2:
                 printf("enter bit to off: \n");
                 scanf("%u", &n);
-                result = callFunc(func[1], bm, n));
+                result = callFunc(func[1], bm, n);
                 if(result == -1)
                 {
                     printf("error");
@@ -45,7 +45,7 @@ int main()
             case 3:
                 printf("enter bit to check status: \n");
                 scanf("%u", &n);
-                result = callFunc(func[2], bm, n));
+                result = callFunc(func[2], bm, n);
                 if(result == -1)
                 {
                     printf("error");
