@@ -8,6 +8,8 @@ typedef struct
 
 }bitMap_t;
 
+typedef int (*bitFunc)(bitMap* , int);
+int callFunc(bitFunc func, bitMap* bm, int n);
 bitMap_t* createBitMap(int nf);
 int bitOn(bitMap_t* bm, int n);
 int bitOff(bitMap_t* bm, int n);
