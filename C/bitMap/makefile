@@ -13,7 +13,7 @@ INCLUDES =
 LIBS =
 
 # define the C source files
-SRCS = bitMap_ex.c bitMap_Main.c
+SRCS = bitMap_ex.c bitMap_main.c
 
 # define the C object files 
 #
