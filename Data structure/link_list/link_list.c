@@ -83,7 +83,7 @@ void printList(Node* head)
 {
 	Node* temp = head;
 	
-	while(temp->next!=NULL)
+	while(temp!=NULL)
 	{			
 		printf("%d  ", temp->value);
 		temp = temp->next;
