@@ -1,12 +1,13 @@
 #include <stdlib.h>
 #include "hash.h"
 
-static void hashFunc(hashTable *table, elementCompare compareFunc);
 
 typedef struct {
-	void** list;
-    int size;
-    elementCompare compareFunc;
+	Node** list;
+    size_t size;
+    hashFunc hashF;
+    compareElementsFunc compareF;
+
 }hashTable;
 
 typedef struct {
@@ -16,66 +17,83 @@ typedef struct {
 
 }Node;
 
+AdtStatus createNode(Node** node, void* key, void* value);
+AdtStatus addNode(Node** list, void* key, void* value);
+AdtStatus destroyNode(Node* node);
 
-
-
-HashTStatus hashtableCreate(int size)
+/*---------------------------------------------------------*/
+AdtStatus createHashTable(hashTable** hashT, size_t size, hashFunc hashF, compareElementsFunc compareF);
 {
-    hashTable* ht;
-
 
     if(size <= 0)	
         {
             return WrongInput;
         }
     
-    ht = malloc(2*size*sizeof(hashTable));
+    (*hashT) = (hashTable*)calloc(1, sizeof(hashTable));
    
-    if(ht==NULL)
+    if(hashT==NULL)
     {
         return AllocationError;
     }
 
-    ht->size = 2*size;
-    ht-> list = NULL;
+    (*hashT)-> list = (Node**)malloc(size*1.5*sizeof(Node*));
+
+    if((*hashT)-> list == NULL)
+    {
+        free(*hashT);
+        return AllocationError;
+    }
+
+    (*hashT)->size = 1.5*size;
+    (*hashT)->hashF = hashF;
+    (*hashT)->compareF = compareF;
 
     return OK;
 }
 
-HashTStatus hashtableInsert(hashTable* ht, void* key, void* value, hashFunc hashFunc)
+/*---------------------------------------------------------*/
+AdtStatus insertHashTable(hashTable* hashT, void* key, void* value);
 {
-    hashTable* ht;
     Node* node;
-    size_t indexBucket = hashFunc(key) % ht->size ;
-
-    node = malloc(sizeof(Node));
+    unsigned long indexBucket = (hashT->hashF(key)) % (hashT->size);
+    if(hashT == NULL)
+    {
+        return NullPointer;
+    }
+    node =(Node*)malloc(sizeof(Node));
     if(node==NULL)
     {
         return AllocationError;
     }
-
-    node->key = key;
-    node->value = value;
-
-    findElement(node, ht[indexBucket]->list);
+    
+    if(hashT->list[indexBucket]== NULL)    /*if bucket is empty - first element*/
+    {
+        node->key = key;
+        node->value = value;
+        hashT->list[indexBucket] = node;
+    }
+    else
+    {
+        findElementInList(hashT,key,value);
+    }
+    
+    
      
 
-
-
 }
-
-AdtStatus findElement(hashTable* ht, Node** search,void* key)
+/*---------------------------------------------------------*/
+AdtStatus findElementInList(hashTable* hashT, void* key, void* value)
 {
     Node* node;
+    unsigned long indexBucket = (hashT->hashF(key)) % (hashT->size);
 
-    while(node)
-    {   
-        if(node->key == key)
-        {
-
-        }
-        node = node->next;
+    if(hashT == NULL)
+    {
+        return NullPointer;
     }
+
+    findNodeInList();
     return node;
 }
 
