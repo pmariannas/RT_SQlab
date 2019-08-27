@@ -3,25 +3,57 @@
 #include <string.h>
 #include "hash.h"
 
-unsigned long hashFunction(unsigned char* str);
+unsigned long hashFunction(void* key);
 int compareElementsFunction(void* key1, void* key2);
 void printHashTable();
-int testInsert(hashTable* hashT);
-int testSearch(hashTable* hashT);
-int testDelete(hashTable* hashT);
+
+int testInsert(HashTable* hashT);
+int testSearch(HashTable* hashT);
+int testDelete(HashTable* hashT);
+/*--------------------------------------------------*/
+int compareElementsFunction(void* key1, void* key2)
+{
+    char* str1;
+    char* str2;
+
+    str1 = (char*)key1;
+    str2 = (char*)key2;
+
+    return strcmp(str1, str2);
+}
+/*--------------------------------------------------*/
+unsigned long hashFunction(void* key)
+{
+    char* str;
+    int c;
+
+    unsigned long hash = 5381;
+    str = (char*)key;
+
+    while(c= *str++)
+    {
+        hash = ((hash << 5) + hash) +c;
+    }
+    return hash;
+}
+/*--------------------------------------------------*/
+
 
 int main()
 {
     int i = 1, value, result, option, size;
-    hashTable* hashT;
-    hashFunc hashF = hashFunction;
-    compareElementsFunc compareF = compareElementsFunction;
-    
-    printf("Enter size of hash table \n");
-    scanf("%d", &size);
-    
-    result = createHashTable(hashT, size, hashF, compareF);
+    HashTable* hashT;
+    hashFunc hashF ;
+    compareElementsFunc compareF;
 
+    hashF = hashFunction;
+    compareF = compareElementsFunction;
+    
+    /*printf("Enter size of hash table \n");
+    scanf("%d", &size);*/
+    size = 10;
+    result = createHashTable(&hashT, size, hashF, compareF);
+    printf("!!!!!!!!!!!!!!!!!!!!! %d\n", result);
     while(i)
     {
         printf("\n Choose option:\n");
@@ -38,10 +70,12 @@ int main()
                 result = testInsert(hashT);
                 break;
             case 2:
-                result =testSearch(hashT);
+                /* result =testSearch(hashT);*/
+               
                 break;
             case 3:
-                result =testDelete(hashT);
+                /*result =testDelete(hashT);*/
+                
                 break;
             case 4:
                 break;
@@ -54,41 +88,27 @@ int main()
     return 0;
 }
 /*--------------------------------------------------*/
-int compareElements(void* key1, void* key2)
-{
-    char* str1;
-    char* str2;
 
-    str1 = (char*)key1;
-    str2 = (char*)key2;
-
-    return strcmp(str1, str2);
-}
-/*--------------------------------------------------*/
-unsigned long hashFunction(unsigned char* str)
+int testInsert(HashTable* hashT)
 {
-    unsigned long hash = 5381;
-    int c;
-    while(c= *str++)
-    {
-        hash = ((hash << 5) + hash) +c;
-    }
-    return hash;
-}
-/*--------------------------------------------------*/
-int testInsert(hashTable* hashT)
-{
-    /*insertHashTable(hashTable* hashT, void* key, void* value);*/
+    int i, key, result; 
+    int value;
+    key = 12345;
+    value = 2019;
+    result = insertHashTable(hashT, &key, &value);
+    printf("!????????????????????????%d\n", result);
     return 0;
 }
+
+
 /*--------------------------------------------------*/
-int testSearch(hashTable* hashT)
+int testSearch(HashTable* hashT)
 {
 
     return 0;
 }
 /*--------------------------------------------------*/
-int testDelete(hashTable* hashT)
+int testDelete(HashTable* hashT)
 {
 
     return 0;
