@@ -17,12 +17,10 @@ struct HashTable{
 };
 
 
- 
-
-/*AdtStatus createNode(Node** node, void* key, void* value);*/
-/*AdtStatus addNode(Node** list, void* key, void* value);*/
-/*AdtStatus destroyNode(Node* node);*/
 AdtStatus findElementInList(HashTable* hashT, void* key, void* value, Node** prev, Node** curr);
+AdtStatus destroyList(Node* node, elementDestroyFunc destroyF);
+AdtStatus destroyNode(Node* node, elementDestroyFunc destroyF);
+AdtStatus forEachList(Node* node, foreachFunc forEF);
 
 
 /*---------------------------------------------------------*/
@@ -65,9 +63,10 @@ AdtStatus insertHashTable(HashTable* hashT, void* key, void* value)
     Node* curr;
     AdtStatus status;
     unsigned long indexBucket;
-    if(hashT == NULL)
+
+    if(key == NULL || value == NULL || hashT == NULL)
     {
-        return NullPointer;
+       return NullPointer;
     }
 
     indexBucket = ((hashT)->hashF(key))%((hashT)->size);
@@ -135,4 +134,101 @@ AdtStatus findElementInList(HashTable* hashT, void* key, void* value, Node** pre
     }
     return NotFound;
 }
+/*---------------------------------------------------------*/
+AdtStatus findHashTable(HashTable* hashT, void* key, void** value)
+{
+    AdtStatus status;
+    if((hashT) == NULL || key == NULL)
+    {
+        return NullPointer;
+    }
+    
+    /*status = findElementInList(hashT, key, value );*/
 
+    return NotFound;
+}
+
+/*---------------------------------------------------------*/
+ AdtStatus desroyHashTable(HashTable* hashT, elementDestroyFunc destroyF)
+ {
+    int i;
+    AdtStatus status = OK;
+    if(hashT == NULL)
+    {
+        return NullPointer;
+    }
+
+    for ( i = 0; i < hashT->size ; i++)
+    {
+        if(destroyList(hashT->list[i], destroyF) != OK)/*check if list destroy*/
+        {
+            status = Failed;
+            return status;
+        }
+    }
+    
+    free(hashT->list);
+    free(hashT);
+    return status;
+ }
+
+
+AdtStatus destroyNode(Node* node, elementDestroyFunc destroyF)
+{
+    if(node == NULL)
+    {
+        return NullPointer;
+    }
+    destroyF(node->key, node->value);
+    free(node);
+    return OK;
+}
+
+AdtStatus destroyList(Node* node, elementDestroyFunc destroyF)
+{
+    Node* temp;
+    while(node!=NULL)
+    {
+        temp = node;
+        node = node->next;
+        if(destroyNode(temp, destroyF) != OK)
+        {
+            return Failed;
+        }
+    }
+    return OK;
+}
+
+
+AdtStatus forEachHashTable(HashTable* hashT, foreachFunc forEF)
+{
+    int i;
+
+    if(hashT == NULL)
+    {
+        return NullPointer;
+    }
+
+    for(i = 0 ; i < hashT->size; i++)
+    {
+        forEachList(hashT->list[i], forEF);
+    }
+    return OK;
+}
+
+AdtStatus forEachList(Node* node, foreachFunc forEF)
+{
+    Node* temp = node;
+    if(node == NULL)
+    {
+        return NullPointer;
+    }
+
+    while (temp != NULL)
+    {
+        forEF(temp->key, temp->value);
+        temp = temp->next;
+    }
+
+    return OK;   
+}
