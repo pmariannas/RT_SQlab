@@ -10,7 +10,7 @@ int main()
     char *args[]={"./aprog",NULL}; 
     pid_t pid;
     printf("----> [%i] Hi I am the parent and I am about to create a child...\n", getpid());
-    pid = fork();s   
+    pid = fork();
     if(pid > 0) /*the father*/
     {
         waitpid(pid, &status, 0);
