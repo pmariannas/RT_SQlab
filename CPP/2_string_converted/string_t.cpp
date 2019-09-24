@@ -5,7 +5,7 @@ using namespace std;
 
 String_t::String_t() //CTOR
 {
-    this->str = createString("");
+    this->str = createString(0);
     //this->size = 0;
 }
 
@@ -32,6 +32,7 @@ String_t& String_t :: operator = (const String_t& cs)
         delete[] this->str;
         this->str = createString(cs.str);
     }
+    return *this;
 }
 
 String_t::~String_t ()
@@ -41,17 +42,22 @@ String_t::~String_t ()
 
 void String_t::printString() 
 { 
+    cout<< this->str;
+    /*
     if(this->str!=NULL)
     {
         cout << "String is: " << this->str ; 
     } 
     else
         cout<<"NULL \n"<< endl;
+    
+    */
+    
 } 
 
-const int String_t::lengthString()const
+int String_t::lengthString()const
 {
-    return strlen(this->str);
+    return strlen(this->str); //return value not add beacouse that we dont return const
 }
 
 void String_t::setString(const char* s)
@@ -65,7 +71,7 @@ void String_t::setString(const char* s)
 
 const char* String_t::getString() const
 {
-    return this->str;
+    return this->str;      //return add because that we return const
 }
 
 int String_t::compareString(const String_t& s)const
@@ -83,6 +89,8 @@ int String_t::compareString(const String_t& s)const
     {
         return 0;
     }
+
+    //return result==0?2:result>0?:2 result<0?:1
 }
 
 char* String_t::createString(const char* s)
@@ -129,8 +137,9 @@ void String_t::prependFunc(const char* s)
     strcpy(tmp, s);
     strcat(tmp, this->str);
     delete[] this->str;
-    this->str = createString(tmp); 
-    delete[] tmp;
+    this->str=tmp;
+    //this->str = createString(tmp); 
+    //delete[] tmp;
 }
 
 /*----------------------------------------------------*/
@@ -145,37 +154,39 @@ String_t& String_t::operator+=(const char* s)
     strcpy(tmp, this->str);
     strcat(tmp, s);
     delete[] this->str;
-    this->str = createString(tmp); 
-    delete[] tmp;
+    this->str =tmp;
+    //this->str = createString(tmp); 
+    //delete[] tmp;
+    return *this;
 }
 
 /*----------------------------------------------------*/
-bool String_t::operator>(const String_t &s)
+bool String_t::operator>(const String_t &s)const
 {
     return (compareString(s)==2) ? true : false;
 }
 
-bool String_t::operator<(const String_t &s)
+bool String_t::operator<(const String_t &s)const
 {
     return (compareString(s)==1) ? true : false;
 }
 
-bool String_t::operator!=(const String_t &s)
+bool String_t::operator!=(const String_t &s)const
 {
     return (compareString(s)!=0) ? true : false;
 }
 
-bool String_t::operator==(const String_t &s)
+bool String_t::operator==(const String_t &s)const
 {
     return (compareString(s)==0) ? true : false;
 }
 
-bool String_t::operator>=(const String_t &s)
+bool String_t::operator>=(const String_t &s)const
 {
     return (compareString(s)==2 || compareString(s)==0) ? true : false;
 }
 
-bool String_t::operator<=(const String_t &s)
+bool String_t::operator<=(const String_t &s)const
 {
     return (compareString(s)==1 || compareString(s)==0) ? true : false;
 
@@ -190,7 +201,7 @@ bool String_t::containsFunc(const char* s)const
 /*----------------------------------------------------*/
 char String_t::operator[](size_t pos)const
 {
-    if(pos < 0 || pos > strlen(this->str))
+    if(pos > strlen(this->str))
     {
         pos = strlen(this->str);
     }
@@ -199,7 +210,7 @@ char String_t::operator[](size_t pos)const
 
 char& String_t::operator[](size_t pos)
 {
-    if(pos < 0 || pos > strlen(this->str))
+    if(pos > strlen(this->str))
     {
         pos = strlen(this->str);
     }

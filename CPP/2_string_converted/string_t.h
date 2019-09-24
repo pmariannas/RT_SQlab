@@ -15,7 +15,7 @@ class String_t
         String_t (const String_t & cs); //copy CTOR
         String_t& operator = (const String_t& s); 
         
-        const int lengthString()const; // length of the string
+        int lengthString()const; // length of the string
         void setString(const char* s); 
         const char* getString()const; 
         int compareString(const String_t& s)const; //'compare' which compares 2 strings
@@ -32,15 +32,15 @@ class String_t
         String_t& operator+=(const String_t& s);
         String_t& operator+=(const char* s);
         //4
-        bool operator>(const String_t &s);
-        bool operator<(const String_t &s);
-        bool operator!=(const String_t &s);
-        bool operator==(const String_t &s);
-        bool operator>=(const String_t &s);
-        bool operator<=(const String_t &s);
+        bool operator>(const String_t &s)const;
+        bool operator<(const String_t &s)const;
+        bool operator!=(const String_t &s)const;
+        bool operator==(const String_t &s)const;
+        bool operator>=(const String_t &s)const;
+        bool operator<=(const String_t &s)const;
         //5
         bool containsFunc(const char* s)const;
-        //6
+        //6 
         char operator[](size_t pos)const;
         char& operator[](size_t pos);
         
@@ -49,8 +49,5 @@ class String_t
         char* str;
         char* createString(const char* s);
 }; 
-//7
-ostream& operator<<(ostream& os, const String_t& s);
-istream& operator>>(istream& is, String_t& s);        
 
 #endif 
