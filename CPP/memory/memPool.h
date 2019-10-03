@@ -33,10 +33,10 @@ class MemPool_t : public MemManager_t
         //size_t setDefaultCapacity(size_t capacity){return MemPage_t::setDefaultCapacity(capacity);}
         
         virtual size_t write(const void* buffer, size_t size);
-        virtual size_t write(const void* buffer, size_t size, size_t position){}
+        virtual size_t write(const void* buffer, size_t size, size_t position);
     
-        virtual size_t read(void* buffer, size_t size){}
-        virtual size_t read(void* buffer, size_t size, size_t position){}
+        virtual size_t read(void* buffer, size_t size);
+        virtual size_t read(void* buffer, size_t size, size_t position);
 
     private:
         MemPool_t(const MemPool_t& mp);
