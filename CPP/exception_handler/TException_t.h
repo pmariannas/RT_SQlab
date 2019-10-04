@@ -6,33 +6,39 @@ using namespace std;
 template <class TEH> class TException_t
 {
     public:
-    
-        TException_t(); //CTOR
-        TException_t(const city_t& city); //copy CTOR
-        TException_t& operator=(const city_t& city); //operator =
+        ~TException_t(){} //CTOR
+        TException_t(TEH exception, string message,  int line, string name); //CTOR
+        TException_t(const TException_t& obj){} //copy CTOR
+        TException_t& operator=(const TException_t& obj){} //operator =
 
         const TEH& getException()const;/* { return m_exception;}*/
-        size_t getLineOfException()const; /*{ return m_lineNum;}*/
+        int getLineOfException()const; /*{ return m_lineNum;}*/
         string getMessage()const; /*{ return m_mess;}*/
         string getFileName()const; /*{ return fName;}*/
         
 
     private:
         TEH m_exception;    //exception object
-        size_t m_lineNum;  // number of exception line
+        int m_lineNum;  // number of exception line
         string m_mess;  // description of exception
         string m_fName; // file name
 };
 
-template <class TEH>
-TException_t::~TException_t()
-{
-}
+// template <class TEH>
+// TException_t::~TException_t()
+// {
+// }
 
 template <class TEH>
-TException_t::TException_t()
+TException_t<TEH>::TException_t(TEH exception, string message, int line, string name)
 {
+    m_exception = exception;
+    m_lineNum = line;
+    m_mess = message;
+    m_fName = name;
 }
+
+
 
 template <class TEH>
 const TEH& TException_t<TEH>::getException()const
@@ -41,7 +47,7 @@ const TEH& TException_t<TEH>::getException()const
 }
 
 template <class TEH>
-size_t TException_t<TEH>::getLineOfException()const 
+int TException_t<TEH>::getLineOfException()const 
 { 
     return m_lineNum;
 }
@@ -55,7 +61,7 @@ string TException_t<TEH>::getMessage()const
 template <class TEH>
 string TException_t<TEH>::getFileName()const 
 { 
-    return fName;
+    return m_fName;
 }
 
 
