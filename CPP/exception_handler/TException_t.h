@@ -9,7 +9,7 @@ template <class TEH> class TException_t
         ~TException_t(){} //CTOR
         TException_t(const TEH& exception, const string& message,  const int& line, const string& name); //CTOR
         TException_t(const TException_t& obj){} //copy CTOR
-        TException_t& operator=(const TException_t& obj){} //operator =
+        
 
         const TEH& getException()const { return m_exception;}
         const int& getLineOfException()const{ return m_lineNum;}
@@ -22,6 +22,8 @@ template <class TEH> class TException_t
         int m_lineNum;  // number of exception line
         string m_mess;  // description of exception
         string m_fName; // file name
+    
+        TException_t& operator=(const TException_t& obj){} //operator =
 };
 
 // template <class TEH>
