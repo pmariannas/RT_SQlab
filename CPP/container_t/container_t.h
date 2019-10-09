@@ -20,9 +20,9 @@ template<class T, class C> class tContainer_t
         bool isEmpty()const {return m_container.empty();} //return true/false according to is container empty or not
         size_t getNumOfElements()const {return m_container.size();} // return number of element in container
         void insertEnd(T* value) { m_container.push_back(value);} // insert a new element in the end of container
-        T* getFirstElement()const 
+        const T* getFirstElement()const 
         {return isEmpty()? throw string("container empty"):(m_container.front());} //return first element in container
-        T* getLastElement()const 
+        const T* getLastElement()const 
         {return isEmpty()?throw string("container empty"):(m_container.back());} //return last element in container
         /*
         bool findElement(tContainer_t& cont)//<algorithm> --> find_if - find element int range 
