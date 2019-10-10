@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <algorithm>
 #include <string>
+#include "isEqual_t.h"
 
 using namespace std;
 
@@ -24,13 +25,23 @@ template<class T, class C> class tContainer_t
         {return isEmpty()? throw string("container empty"):(m_container.front());} //return first element in container
         const T* getLastElement()const 
         {return isEmpty()?throw string("container empty"):(m_container.back());} //return last element in container
-        /*
-        bool findElement(tContainer_t& cont)//<algorithm> --> find_if - find element int range 
+        
+        bool findElement(T& value)//<algorithm> --> find_if - find element int range 
         {
-            m_it.find_if(m_container.begin(), m_container.end(), )
+            iter it = find_if(m_container.begin(), m_container.end(),isEqual_t<T>(value) );
+            if(it!=m_container.end())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+
             
         } 
-        */
+        
         //void removeElement();
         void removeAllElements()
         {

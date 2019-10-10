@@ -40,7 +40,7 @@ int main()
         cout << "4 - get Last Element in container" << endl;
         cout << "5 - remove All Elements" << endl;
         cout << "6 - remove and delete All Elements" << endl;
-        cout << "7 - " << endl;
+        cout << "7 - find by value" << endl;
         cout << "8 - " << endl;
         cout << "9 - " << endl;
         cout << "10 - " << endl;
@@ -128,7 +128,10 @@ int main()
             }
             case 7:
             {
-
+                
+                //intArray.findElement(10);
+                cout<< "the find element is: " << endl;
+               
                 break;
             }
             case 8:
