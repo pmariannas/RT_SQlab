@@ -4,35 +4,21 @@ using namespace std;
 /*
 ad_t::ad_t(const ad_t& ad)//copy CTOR
 {
-    iter_t it;
-    it=ad.meetMap.begin();
-    for(it ; it!=ad.meetMap.begin() ; it++)
-    {
-        insertAppointmentToAD(it->second);
-    }
+    
 }
 
 ad_t& ad_t::operator=(const ad_t& ad)//operator =
 {
-    if(this!=&ad)
-    {
-        cleanAD();
-        iter_t it;
-        it=ad.meetMap.begin();
-        for(it ; it!=ad.meetMap.begin() ; it++)
-        {
-            insertAppointmentToAD(it->second);
-        }
-    }
-    return *this;
+    
 }
 */
+
 bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
 {
-    
+    bool status = false;
     if(meet == 0)
     {
-        return false;
+        return status;
     }
 
     iter_t it;
@@ -43,29 +29,29 @@ bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
     //if container empty
     if(it == meetMap.end())
     {   
-        float indexMeet = meet->getStartTime();
-        meetMap[indexMeet] = meet;
+        meetMap[meet->getStartTime()] = meet;
+        //status = true;
         return true;
     }
     //before the first
     currentMeeting = it->second; //give the value 
     
-    if(meet->getEndTime() < currentMeeting->getStartTime())
+    if(meet->getEndTime() <= currentMeeting->getStartTime())
     {
-        float indexMeet = meet->getStartTime();
-        meetMap[indexMeet] = meet;
+        meetMap[meet->getStartTime()] = meet;
+        //status = true;
         return true;
     }
 
-    //before the end
+    //after the end
     it = meetMap.end();
     it--;
     currentMeeting = it->second; //give the value 
 
-    if(meet->getStartTime() > currentMeeting->getEndTime())
+    if(meet->getStartTime() >= currentMeeting->getEndTime())
     {
-        float indexMeet = meet->getStartTime();
-        meetMap[indexMeet] = meet;
+        meetMap[meet->getStartTime()] = meet;
+        //status = true;
         return true;
     }
     //between
@@ -76,54 +62,57 @@ bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
     
     while (it!=meetMap.end())
     { 
-        if(meet->getStartTime() > currentMeeting->getEndTime() && meet->getEndTime() < nextMeeting->getStartTime())
+        if(meet->getStartTime() >= currentMeeting->getEndTime())
         {
-            float indexMeet = meet->getStartTime();
-            meetMap[indexMeet] = meet;
-            return true;
+            if(meet->getEndTime() <= nextMeeting->getStartTime())
+            {
+                meetMap[meet->getStartTime()] = meet;
+                //status = true;
+                return true;
+            }
         }
-        else
-        {
-            currentMeeting = it->second;
-            it++;
-            nextMeeting = it->second;
-        }
+
+        currentMeeting = it->second;
+        it++;
+        nextMeeting = it->second;
     }
 
+    // if(status == false)
+    // {
+    //     delete meet;
+    // }
+    delete meet;
     return false;
 }
 
-meeting_t* ad_t::removeAppointmentFromAD(float startTime)// remove appointment from AD (return poiter to remeved meeting)
+meeting_t* ad_t::removeAppointmentFromAD(const float& timeToRemove)// remove appointment from AD (return poiter to remeved meeting)
 {
     iter_t it;
-    it = meetMap.find(startTime);
-    if (it == meetMap.end())
+    meeting_t* meet = findAppointmentInAD(timeToRemove);
+    if(meet == 0)
     {
-        return 0; //NOT found
+        return 0;
     }
-    else
-    {
-        meeting_t* removed = it->second;
-        meetMap.erase(it);
-
-        return removed;
-    }
-    
+    it = meetMap.find(meet->getStartTime());
+    meetMap.erase(it);
+    return meet;
 }
 
-meeting_t* ad_t::findAppointmentInAD(float startTime)
+meeting_t* ad_t::findAppointmentInAD(const float& timeToFind)
 {
     iter_t it;
-    it = meetMap.find(startTime);
-    if (it == meetMap.end())
+    it = meetMap.begin();
+    while (it!=meetMap.end())
     {
-        return 0; //NOT found
+        if(timeToFind >= it->second->getStartTime() && timeToFind <= it->second->getEndTime())
+        {
+            return it->second;
+        }
+        it++;
     }
-    else
-    {
-        return it->second;
-    }
+    return 0;//not found
 }
+
 //clean AD
 void ad_t::cleanAD()
 {
@@ -139,10 +128,14 @@ void ad_t::cleanAD()
 void ad_t::printAD()
 {
     iter_t it = meetMap.begin();;
-    while (!meetMap.empty())
+    while (it!=meetMap.end())
     {
         it->second->printMeeting();
         it++;
     }
-    
 }
+
+/* void ad_t::saveToFile()
+ {
+    
+ }*/

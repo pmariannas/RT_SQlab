@@ -5,20 +5,6 @@
 
 using namespace std;
 
-// bool checkTime(float start, float end)
-// {
-//     if(start <= 0 || start > 24 end <= 0 || end > 24 || start>end )
-//     {
-//         return false;
-//     }
-//     else
-//     {
-//         return true;
-//     }
-// }
-
-
-
 int main()
 {
     unsigned int i = 1;
@@ -28,14 +14,13 @@ int main()
     {
         cout << "\nChoose option: \n"<< endl;
         cout << "0 - exit " << endl;
-        cout << "1 - insert Appointment To AD" << endl;
-        cout << "2 - remove Appointment From AD" << endl;
-        cout << "3 - find Appointment In AD" << endl;
+        cout << "1 - insert To AD" << endl;
+        cout << "2 - remove From AD" << endl;
+        cout << "3 - find In AD" << endl;
         cout << "4 - clean AD" << endl;
         cout << "5 - print AD" << endl;
+        cout << "6 - save AD in file" << endl;
         
-        
-
         cin >> i;
         switch (i)
         {
@@ -51,31 +36,31 @@ int main()
 
                 cout<<"enter start time: ";
                 cin>>start;
-
                 cout<<"enter end time: ";
                 cin>>end;
-                
-                /*cout<<"enter subject of meeting ";
+                 /*cout<<"enter subject of meeting ";
                 cin>>sub;*/
+                
                 try
                 {
                     meeting_t* meet = new meeting_t(start, end, sub);
                     answer = calendar.insertAppointmentToAD(meet);
-
                 }
                 catch(int e)
                 {
+                    start = 0;
+                    end = 0;
                     cout<<"can not create meeting - error: "<< e <<endl;
                     break;
-                }
-                
+                }   
+
                 if(answer == true)
                 {
-                    cout<<"insered success!"<<endl;
+                    cout<<"action completed successfully!"<<endl;
                 }
                 else
                 {
-                    cout<<"insered failed"<<endl;
+                    cout<<"action failed"<<endl;
                 }
             
                 break;
@@ -84,12 +69,12 @@ int main()
             {
                 float startTime;
                 meeting_t* removed;
-                cout<< "Enter start time of meeting to remove ";
+                cout<< "Enter time of meeting to remove ";
                 cin>>startTime;
                 removed = calendar.removeAppointmentFromAD(startTime); // return poiter to remeved meeting
                 if(removed == 0)
                 {
-                    cout<<"Nothing to removed!"<<endl;
+                    cout<<"Nothing to remove!"<<endl;
 
                 }
                 else
@@ -103,10 +88,10 @@ int main()
             {
                 float startTime;
                 meeting_t* meetToFind;
-                cout<< "Enter start time of meeting to find ";
+                cout<< "Enter time of meeting to find ";
                 cin>>startTime;
                 meetToFind = calendar.findAppointmentInAD(startTime); // fin dAppointment In AD by hour
-                cout<< "find meeting : "<<endl;
+                cout<< "meeting found: "<<endl;
                 if(meetToFind==0)
                 {
                     cout<<"Not found!"<<endl;
@@ -115,8 +100,7 @@ int main()
                 {
                     meetToFind->printMeeting();
                 }
-                
-                
+            
                 break;
             }
             case 4:
@@ -129,6 +113,11 @@ int main()
             {
                 calendar.printAD();
                 
+                break;
+            }
+            case 6:
+            {
+                cout<<"function in planning"<<endl;
                 break;
             }
             

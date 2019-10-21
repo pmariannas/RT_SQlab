@@ -11,7 +11,7 @@ class meeting_t
     public:
         virtual ~meeting_t(){}; //DTOR
         //CTOR
-        meeting_t(const float& startT, const float& endT, string& sub) 
+        meeting_t(const float& startT, const float& endT,const string& sub) 
         {
             
             int e = -1;
