@@ -13,7 +13,7 @@ ad_t& ad_t::operator=(const ad_t& ad)//operator =
 }
 */
 
-bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
+bool ad_t::insertAppointmentToAD(const meeting_t* meet)// insert appointment into AD
 {
     bool status = false;
     if(meet == 0)
@@ -29,7 +29,7 @@ bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
     //if container empty
     if(it == meetMap.end())
     {   
-        meetMap[meet->getStartTime()] = meet;
+        meetMap[meet->getStartTime()] = (meeting_t*)meet;
         //status = true;
         return true;
     }
@@ -38,7 +38,7 @@ bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
     
     if(meet->getEndTime() <= currentMeeting->getStartTime())
     {
-        meetMap[meet->getStartTime()] = meet;
+        meetMap[meet->getStartTime()] = (meeting_t*)meet;
         //status = true;
         return true;
     }
@@ -50,7 +50,7 @@ bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
 
     if(meet->getStartTime() >= currentMeeting->getEndTime())
     {
-        meetMap[meet->getStartTime()] = meet;
+        meetMap[meet->getStartTime()] = (meeting_t*)meet;
         //status = true;
         return true;
     }
@@ -66,7 +66,7 @@ bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
         {
             if(meet->getEndTime() <= nextMeeting->getStartTime())
             {
-                meetMap[meet->getStartTime()] = meet;
+                meetMap[meet->getStartTime()] = (meeting_t*)meet;
                 //status = true;
                 return true;
             }
@@ -81,7 +81,7 @@ bool ad_t::insertAppointmentToAD( meeting_t* meet)// insert appointment into AD
     // {
     //     delete meet;
     // }
-    delete meet;
+    
     return false;
 }
 
@@ -98,9 +98,9 @@ meeting_t* ad_t::removeAppointmentFromAD(const float& timeToRemove)// remove app
     return meet;
 }
 
-meeting_t* ad_t::findAppointmentInAD(const float& timeToFind)
+meeting_t* ad_t::findAppointmentInAD(const float& timeToFind)const
 {
-    iter_t it;
+    citer_t it;
     it = meetMap.begin();
     while (it!=meetMap.end())
     {
@@ -125,9 +125,9 @@ void ad_t::cleanAD()
     }
 }
 
-void ad_t::printAD()
+void ad_t::printAD()const
 {
-    iter_t it = meetMap.begin();;
+    citer_t it = meetMap.begin();;
     while (it!=meetMap.end())
     {
         it->second->printMeeting();

@@ -31,7 +31,7 @@ class meeting_t
         const float& getEndTime()const{ return this->m_endTime; }
         const string& getSubject()const{ return this->m_subject; }
 
-        void printMeeting()
+        void printMeeting()const
         { cout<<"The meeting: " <<
           getStartTime() << "-" << getEndTime() << " subject: " << getSubject() <<endl;}
 
