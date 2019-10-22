@@ -1,5 +1,7 @@
 #include "virtIO_t.h"
+#include "asciiIO_t.h"
 #include <iostream>
+#include <stdio.h>
 #include <string>
 
 using namespace std;
@@ -25,9 +27,10 @@ int main()
                 i = 0;
                 break;
             case 1:
-            
-                break;
+            {
 
+                break;
+            }
             case 2:
                 
                 break;
@@ -39,7 +42,7 @@ int main()
             case 4:
             
                 break;
-            case 4:
+            case 5:
             
                 break;
 

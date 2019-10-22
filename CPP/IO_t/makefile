@@ -4,7 +4,7 @@ CFLAGS = -ansi -pedantic
 INCLUDES = 
 LIBS =-lm
 
-SRCS = mainTest.cpp 
+SRCS = mainTest.cpp virtIO_t.cpp asciiIO_t.cpp
 
 OBJS = $(SRCS:.c=.o)
 
