@@ -6,36 +6,32 @@ virtIO_t::virtIO_t() //CTOR
     m_mode = ' ';
     m_status = ok_e;
     m_position = 0;
-    *m_fp;
+    FILE* m_fp = 0;
 }
 
 virtIO_t::virtIO_t(const string& name, const string& mode) //CTOR
 {
-        m_fp = fopen(name.c_str(),mode.c_str()); //c_str() converts a C++ string into a C-style string.
-        if(m_fp==NULL)
-        {
-            m_status = cant_open_file_e;
-            throw m_status;
-        }
-
-        m_name = name;
-        m_mode = mode;
-        m_status = ok_e;
+    m_name = name;
+    m_mode = mode;
+    m_status = ok_e;
+    m_position = 0;
+    FILE* m_fp = 0;
 }
 
 
 bool virtIO_t::open()
 {
-    m_fp = fopen(m_name.c_str(), m_mode.c_str());
+    m_fp = fopen(m_name.c_str(), m_mode.c_str()); //c_str() converts a C++ string into a C-style string.
     if(!m_fp)
     {
         m_status = cant_open_file_e;
+        throw m_status;
     }
 }
 
-void virtIO_t::close()
+void virtIO_t::fClose(FILE* fp)
 {
-    fclose(m_fp);
+    fclose(fp);
 }
 
 bool virtIO_t::checkValidRead()
@@ -69,3 +65,16 @@ bool virtIO_t::checkValidWrite()
     }
     return answer;
 }
+
+
+void virtIO_t::setPosition(size_t position)
+    {
+        //need to check possition<lenght
+        if (position < getFileLenght())
+        {
+            fseek(m_fp, position, SEEK_SET);
+            m_position = position;
+        
+        }
+    }
+//virtIO_t StatusIO getStatus()

@@ -7,49 +7,39 @@
 
 using namespace std;
 
-typedef enum status
-{
-    ok_e,
-    cant_open_file_e,
-    bad_access_e,
-    writeErr_e,
-    readErr_e
-} StatusIO;
-
 class virtIO_t
 {
 public:
-    virtual ~virtIO_t() = 0;
+    typedef enum status{ ok_e, cant_open_file_e, bad_access_e, writeErr_e, readErr_e } StatusIO;
+
+    virtual ~virtIO_t(){ fClose(m_fp); } 
     virtIO_t();                                       //CTOR
     virtIO_t(const string &name, const string &mode); //CTOR
 
-    const string &getFileName() const { return m_name; }
-    const string &getFileMode() const { return m_mode; }
+    const string& getFileName() const { return m_name; }
+    const string& getFileMode() const { return m_mode; }
 
-    size_t getPosition() const { return m_position; /*return ftell(m_fp);*/ }
-    void setPosition(size_t position)
-    {
-        if (m_fp)
-        {
-            fseek(m_fp, position, SEEK_SET);
-            m_position = position;
-        }
-    }
+    size_t getPosition() const { return m_position; }
+    
     size_t getFileLenght() const
     {
+        size_t currPos = ftell(m_fp); 
         size_t lenght = 0;
         if (m_fp)
         {
             fseek(m_fp, 0, SEEK_END);
             lenght = ftell(m_fp);
+            fseek(m_fp, currPos, SEEK_SET); //back to the currect position
         }
         return lenght;
     }
 
+    void setPosition(size_t position);
+
     StatusIO getStatus() const { return m_status; }
 
     bool open();
-    void close();
+    void fClose(FILE* fp);
 
     bool checkValidWrite();
     bool checkValidRead();
@@ -86,13 +76,13 @@ public:
         */
 
 protected:
+    FILE* m_fp;
     string m_name;
     string m_mode;
     StatusIO m_status;
     size_t m_position;
-    FILE *m_fp;
 
-    StatusIO setStatus(StatusIO status) { m_status = status; }
+    //void setStatus(StatusIO status) { m_status = status; }
 
 private:
     virtIO_t(const virtIO_t &virt);            //copy CTOR
