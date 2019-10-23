@@ -2,143 +2,242 @@
 #include "binIO_t.h"
 
 template <class T>
-void writeTest(virtIO_t* vir){
-	T i;	
-	char c=' ';
+void writeTest(virtIO_t *vir)
+{
+	T i;
+	char c = ' ';
 	cin >> i;
-	(*vir)<< i << c;
+	(*vir) << i << c;
 }
 
 template <class T>
-void readTest(virtIO_t* vir){
-	T i;	
+void readTest(virtIO_t *vir)
+{
+	T i;
 	(*vir) >> i;
-	cout << i << " ";
+	cout << "The data: " << i << " ";
 }
 
-void vpTestWrite(virtIO_t* vir){
-	binIO_t* fp=dynamic_cast<binIO_t*>(vir);
-	if(fp!=0){
-		char arr[10]={'a','b','c','d','e','f','g','h','i','j'};		
-		(*fp)<<arr,sizeof(arr);
-	}
-	else{
-		cout << "wrong operation" << endl;
-	}
+void vpTestWrite(virtIO_t *vir)
+{
+	
 }
 
-void vpTestRead(virtIO_t* vir){
-	binIO_t* fp=dynamic_cast<binIO_t*>(vir);
-	if(fp!=0){	
-		char arr[10];
-		(*fp)>>arr,sizeof(arr);
-		for (unsigned int i=0; i<sizeof(arr);i++){
-			cout << arr[i];
+void vpTestRead(virtIO_t *vir)
+{
+	
+}
+
+void readToFile(virtIO_t *vir)
+{
+	char c;
+	int i = 1;
+	while (i)
+	{
+		cout << endl
+			 << "i - int | l - long | f - float | c - char | d - double | v - void* | e - exit " << endl;
+		cin >> c;
+		switch (c)
+		{
+		case 'i':
+		{
+			readTest<int>(vir);
+			break;
+		}
+		case 'l':
+		{
+			readTest<long>(vir);
+			break;
+		}
+		case 'f':
+		{
+			readTest<float>(vir);
+			break;
+		}
+		case 'c':
+		{
+			readTest<char>(vir);
+			break;
+		}
+		case 'd':
+		{
+			readTest<double>(vir);
+			break;
+		}
+		case 'v':
+		{
+			//vpTestRead(vir);
+			break;
+		}
+		case 'e':
+		{
+			i = 0;
+			break;
+		}
+		default:
+			break;
 		}
 	}
-	else{
-		cout << "wrong operation";
+}
+
+void writeToFile(virtIO_t *vir)
+{
+	char c;
+	int i = 1;
+	while (i)
+	{
+		cout << endl
+			 << "i - int | l - long | f - float | c - char | d - double | v - void*  | e - exit" << endl;
+		cin >> c;
+		switch (c)
+		{
+		case 'i':
+		{
+			writeTest<int>(vir);
+			break;
+		}
+		case 'l':
+		{
+			writeTest<long>(vir);
+			break;
+		}
+		case 'f':
+		{
+			writeTest<float>(vir);
+			break;
+		}
+		case 'c':
+		{
+			writeTest<char>(vir);
+			break;
+		}
+		case 'd':
+		{
+			writeTest<double>(vir);
+			break;
+		}
+		case 'v':
+		{
+			//vpTestWrite(vir);
+			break;
+		}
+		case 'e':
+		{
+			i = 0;
+			break;
+		}
+		default:
+			break;
+		}
 	}
-	cout << endl;
 }
 
-int chooseVar(){ 
-	cout << "0.exit" << endl;
-	cout << "1.int" << endl; 
-	cout << "2.long" << endl; 
-	cout << "3.float" << endl; 
-	cout << "4.char" << endl; 
-	cout << "5.double" << endl; 
-	cout << "6.pointer" << endl;
-	int i; 
-	cin >> i;
-	return i;
-}
-
-void readToFile(virtIO_t* vir){	
-	int i;	
-	do{
-		i=chooseVar();
-		switch (i){
-			case 1: readTest<int>(vir); break;
-			case 2: readTest<long>(vir); break;
-			case 3: readTest<float>(vir); break;
-			case 4: readTest<char>(vir); break;
-			case 5: readTest<double>(vir); break;
-			case 6: vpTestRead(vir); break;
-			default: break;
-		}
-	}while(i);
-}
-
-void writeToFile(virtIO_t* vir){	
-	int i;	
-	do{
-		i=chooseVar();
-		switch (i){
-			case 1: writeTest<int>(vir); break;
-			case 2: writeTest<long>(vir); break;
-			case 3: writeTest<float>(vir); break;
-			case 4: writeTest<char>(vir); break;
-			case 5: writeTest<double>(vir); break;
-			case 6: vpTestWrite(vir); break;
-			default: break;
-		}
-	}while(i);
-}
-
-
-void fileTest(virtIO_t* vir){
-	string fname;
-	string faccess;
-	cout << "enter filename" << endl;
-	cin >> fname;
-	cout << "enter access" << endl;
-	cin >> faccess;
-	vir->Fopen(fname.c_str(),faccess.c_str());
-	if (vir->getStatus()!=virtIO_t::ok_e){
-		cout << "wrong name or access" << endl;
+void fileTest(virtIO_t *vir)
+{
+	string name;
+	string mode;
+	cout << "enter file name" << endl;
+	cin >> name;
+	cout << "enter mode " << endl;
+	cin >> mode;
+	try
+	{
+		vir->Fopen(name.c_str(), mode.c_str());
+	}
+	catch (string e)
+	{
+		cout << e << endl;
 		vir->Fclose();
 		return;
 	}
+
+	// if (vir->getStatus() != virtIO_t::ok_e)
+	// {
+	// 	cout << "ERROR - wrong input" << endl;
+	// }
+
 	char c;
-	while(1){
-		cout << "read(r) || write(w) || get pos(g) || set pos(s) || get length(l) || back(b)? " << endl;
+	while (1)
+	{
+		cout << endl
+			 << "r - read | w - write |  p - get position | s - set position | l - get length | e - exit " << endl;
 		cin >> c;
-		bool f=0;
-		try{
-			switch (c){
-				case 'r': readToFile(vir); break;
-				case 'w': writeToFile(vir); break;
-				case 'g': cout << vir->getPosition() << endl; break;
-				case 's': size_t s; cin >> s; vir->setPosition(s); break;
-				case 'l': cout << vir->getfileLen() << endl; break;
-				default: f=1; break;
+		bool boo = 0;
+		try
+		{
+			switch (c)
+			{
+			case 'r':
+			{
+				readToFile(vir);
+
+				break;
 			}
-		}catch(int ex){
-				cout << "bad access" << endl;
+			case 'w':
+			{
+
+				writeToFile(vir);
+
+				break;
 			}
-		if(f) break;
+			case 'p':
+			{
+				cout << "The position: " << vir->getPosition() << endl;
+				break;
+			}
+			case 's':
+			{
+				size_t s;
+				cin >> s;
+				vir->setPosition(s);
+				break;
+			}
+			case 'l':
+			{
+				cout << "The lenght: " << vir->getfileLen() << endl;
+				break;
+			}
+			case 'e':
+			{
+				boo = 1;
+				break;
+			}
+			default:
+				break;
+			}
+			if (boo)
+			{
+				break;
+			}
+		}
+		catch (string ex)
+		{
+			cout << ex << endl;
+		}
 	}
-	vir->Fclose();	
+	vir->Fclose();
 }
-int main(){
+int main()
+{
 	int i = 1;
-	while(i){
+	while (i)
+	{
 		cout << "choose a - ascii | b - binary | e - exit " << endl;
 		char c;
 		cin >> c;
-		if(c=='a'){
+		if (c == 'a')
+		{
 			asciiIO_t a1;
 			fileTest(&a1);
 		}
-		else if(c=='b'){
+		else if (c == 'b')
+		{
 			binIO_t b1;
 			fileTest(&b1);
 		}
-		else{
+		else if (c == 'e')
+		{
 			i = 0;
-			
 		}
 	}
 	return 0;
