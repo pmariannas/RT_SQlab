@@ -12,18 +12,40 @@ class parser_t
 {
 
     public:
-        ~parser_t();
+        ~parser_t(){closeFile();} //must close file and delete new
         parser_t();
+        
+        void openFile(const string& filename)
+        {
+            m_file.open(filename);
+        }
 
-        //void openFile();
-        //void readFile();
+        void closeFile()
+        {
+            m_file.close();
+        }
+
+        void parseFunction()
+        {
+            size_t lineNumber=1;
+            string fileLine;
+            while(getline (m_file,fileLine))
+            {
+                tokenContainer=m_tokenizer.tokenize(fileLine);
+                m_analyzer.analyze(tokenContainer,lineNumber);
+                lineNumber++;
+            
+            }
+        }
         //void cleanParser();
     
 
     private:
-        //?<tokenizer_t > tokenContainer;
-        //?typedef typename <tokenizer_t >::iterator iter_t;
-
+        vector <string>& tokenContainer;
+        tokenizer_t m_tokenizer;
+        analyzer_t m_analyzer;
+        ifstream m_file;
+        
         parser_t(const parser_t& p);            //copy CTOR
         parser_t &operator=(const parser_t& p); //operator =
 };
