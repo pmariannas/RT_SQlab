@@ -18,15 +18,6 @@ void readTest(virtIO_t *vir)
 	cout << "The data: " << i << " ";
 }
 
-void vpTestWrite(virtIO_t *vir)
-{
-	
-}
-
-void vpTestRead(virtIO_t *vir)
-{
-	
-}
 
 void readToFile(virtIO_t *vir)
 {
@@ -35,7 +26,7 @@ void readToFile(virtIO_t *vir)
 	while (i)
 	{
 		cout << endl
-			 << "i - int | l - long | f - float | c - char | d - double | v - void* | e - exit " << endl;
+			 << "i - int | l - long | f - float | c - char | d - double | e - exit " << endl;
 		cin >> c;
 		switch (c)
 		{
@@ -64,11 +55,7 @@ void readToFile(virtIO_t *vir)
 			readTest<double>(vir);
 			break;
 		}
-		case 'v':
-		{
-			//vpTestRead(vir);
-			break;
-		}
+		
 		case 'e':
 		{
 			i = 0;
@@ -87,7 +74,7 @@ void writeToFile(virtIO_t *vir)
 	while (i)
 	{
 		cout << endl
-			 << "i - int | l - long | f - float | c - char | d - double | v - void*  | e - exit" << endl;
+			 << "i - int | l - long | f - float | c - char | d - double  | e - exit" << endl;
 		cin >> c;
 		switch (c)
 		{
@@ -116,11 +103,7 @@ void writeToFile(virtIO_t *vir)
 			writeTest<double>(vir);
 			break;
 		}
-		case 'v':
-		{
-			//vpTestWrite(vir);
-			break;
-		}
+		
 		case 'e':
 		{
 			i = 0;
@@ -150,11 +133,6 @@ void fileTest(virtIO_t *vir)
 		vir->Fclose();
 		return;
 	}
-
-	// if (vir->getStatus() != virtIO_t::ok_e)
-	// {
-	// 	cout << "ERROR - wrong input" << endl;
-	// }
 
 	char c;
 	while (1)
