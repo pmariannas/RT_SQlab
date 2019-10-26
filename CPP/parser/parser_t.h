@@ -2,62 +2,60 @@
 #define PARSER_T_CLASS_H
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
-#include <iterator>
+
+#include "tokenizer_t.h"
+#include "analyzer_t.h"
 
 using namespace std;
 
 class parser_t
 {
+public:
+    parser_t(){ }
+    ~parser_t(){ }
 
-    public:
-        ~parser_t(){closeFile();} //must close file and delete new
-        parser_t();
-        
-        void openFile(const string& filename)
-        {
-            m_file.open(filename);
-        }
+    void parseFunction(const char* filePath)
+    {
+        size_t lineNumber = 1;
+        string fileLine;
+        ifstream m_file(filePath);
 
-        void closeFile()
+        if (m_file.is_open())
         {
+            while (getline(m_file, fileLine))
+            {
+                m_tokenizer.tokenize(fileLine,tokenContainer);
+                m_tokenizer.printTokens(tokenContainer);
+                m_analyzer.analyze(tokenContainer , lineNumber);
+                lineNumber++;
+            }
+
             m_file.close();
         }
+        throw("unable to open this file!");
+    }
 
-        void parseFunction()
-        {
-            size_t lineNumber=1;
-            string fileLine;
-            while(getline (m_file,fileLine))
-            {
-                tokenContainer=m_tokenizer.tokenize(fileLine);
-                m_analyzer.analyze(tokenContainer,lineNumber);
-                lineNumber++;
-            
-            }
-        }
-        //void cleanParser();
+
+private:
+    tokenizer_t m_tokenizer;
+    analyzer_t m_analyzer;
+    vector<string> tokenContainer;
+
+    typedef typename vector<string>::iterator iter_t;
     
-
-    private:
-        vector <string>& tokenContainer;
-        tokenizer_t m_tokenizer;
-        analyzer_t m_analyzer;
-        ifstream m_file;
-        
-        parser_t(const parser_t& p);            //copy CTOR
-        parser_t &operator=(const parser_t& p); //operator =
+    parser_t(const parser_t &p);            //copy CTOR
+    parser_t &operator=(const parser_t &p); //operator =
 };
 
+// parser_t::parser_t(/* args */)
+// {
+// }
 
-parser_t::~parser_t()
-{
-}
-
-
-parser_t::parser_t()
-{
-}
+// parser_t::~parser_t()
+// {
+// }
 
 #endif

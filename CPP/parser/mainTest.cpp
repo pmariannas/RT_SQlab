@@ -4,6 +4,9 @@
 
 int main()
 {
-
+    parser_t parser;
+    cout<<"HELLO TO PARSER!"<<endl;
+    
+    parser.parseFunction("parserFile.txt");   
     return 0;
 }
