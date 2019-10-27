@@ -3,18 +3,18 @@
 analyzer_t::analyzer_t()
 {
     int i;
-    //ifElseFlag = true;
     counterRoundBrackets = 0;
     counterCurlyBrackets = 0;
     counterSquareBrackets = 0;
     firstLine = 1;
-
+    isIf = false;
+    // declaredVariabls.push_back("");
 
     string pt[] = {"char", "short", "int", "long", "float", "double", "void"};
     string kw[] = {"if", "else", "for", "while", "class", "private", "public", "protected", "main", "const", "virtual"};
     string op[] = {"++", "--", "==", "->", "=", "+", "-", "*", "&", "<<", ">>"};
-    string dl[] = {"(", ")", "{", "}", "[", "]", "<", ">", ";", "=", "+", "-", "*", "&"};       
-    
+    string dl[] = {"(", ")", "{", "}", "[", "]", "<", ">", ";", "=", "+", "-", "*", "&"};
+
     for (i = 0; i < sizeof(pt) / sizeof(string); i++)
     {
         predTypes.push_back(pt[i]);
@@ -32,7 +32,15 @@ analyzer_t::analyzer_t()
         delimeters.push_back(dl[i]);
     }
 }
+void analyzer_t::printVector(const vector<string> &v) const
+{
 
+    int i;
+    for (i = 0; i < v.size(); i++)
+    {
+        cout << v[i] << "   ";
+    }
+}
 // void analyzer_t::setRules()
 // {
 //     string predTypes[] = {"char", "short", "int", "long", "float", "double", "void"};
@@ -44,50 +52,106 @@ analyzer_t::analyzer_t()
 void analyzer_t::analyze(vector<string> &tokenContainer, size_t lineNumber)
 {
     int i;
+
     for (i = 0; i < tokenContainer.size(); i++)
     {
-        int nextIndex = i + 1;
-        if (nextIndex < tokenContainer.size())
+        if (tokenContainer.size() == 1) //if size container 1
         {
-            string currToken = tokenContainer[i];
-            string nextToken = tokenContainer[nextIndex];
-            
-            if (lineNumber == 1 && firstLine == true)
-            {
-                firstLine = false;
-                int ans = currToken.compare("main");
-                if (ans != 0)
-                {
-                    cout << "Error in line: " << lineNumber << " , "
-                         << "no main before" << endl;
-                }
-            }
-
-            string st = check2Tokens(currToken, nextToken);
+            string lastElement = tokenContainer[i];
+            string st = lastElementInContainer(lastElement);
             if (st != "OK")
             {
                 cout << "Error in line: " << lineNumber << " , " << st << endl;
             }
         }
+        else
+        {
+            int nextIndex = i + 1;
+            if (nextIndex < tokenContainer.size())
+            {
+                string currToken = tokenContainer[i];
+                string nextToken = tokenContainer[nextIndex];
+
+                if (lineNumber == 1 && firstLine == true)
+                {
+                    firstLine = false;
+                    int ans = currToken.compare("main");
+                    if (ans != 0)
+                    {
+                        cout << "Error in line: " << lineNumber << " , "
+                             << "no main before" << endl;
+                    }
+                }
+
+                if (isIf == false)
+                {
+                    if (currToken == "if")
+                        isIf = true;
+                }
+
+                string st = check2Tokens(currToken, nextToken);
+                if (st != "OK")
+                {
+                    cout << "Error in line: " << lineNumber << " , " << st << endl;
+                }
+            }
+            else //the last param in vector
+            {
+                //if the last element in container
+                string lastElement = tokenContainer[i];
+                string st = lastElementInContainer(lastElement);
+                if (st != "OK")
+                {
+                    cout << "Error in line: " << lineNumber << " , " << st << endl;
+                }
+            }
+        }
+    }
+}
+string analyzer_t::lastElementInContainer(string lastElement)
+{
+
+    if (isKeyWord(lastElement) && lastElement == "else" && isIf == false) //not decla
+    {
+        return "else without if";
+    }
+    else if (isDelimeters(lastElement) && (lastElement == "+" || lastElement == "-" || lastElement == "="))
+    {
+        if (checkCorrectPlusMinusEqual(lastElement) == false)
+        {
+            return "no operator ";
+        }
+        return "OK";
+    }
+    else if (isPredType(lastElement) == true)
+    {
+        return "multiple type declaration";
+    }
+    else
+    {
+        return "OK";
     }
 }
 
 string analyzer_t::check2Tokens(string currToken, string nextToken)
 {
     iter_t it;
+
     //check if token is type like int or float
-    bool ans = isPredType(currToken);
-    if (ans == true)
+    if (isPredType(currToken) == true)
     {
-        ans = isPredType(nextToken);
-        if (ans == true)
+        if (isPredType(nextToken) == true)
         {
             return "multiple_type_declaration"; //error multiple type declaration
         }
+        else if (!isalpha(nextToken.at(0)))
+        {
+            return "illegal variable";
+        }
+
         else
         {
-            ans = isDeclared(nextToken);
-            if (ans == true)
+            if (isDeclared(nextToken))
             {
                 return "variable_already_declared";
             }
@@ -99,22 +163,40 @@ string analyzer_t::check2Tokens(string currToken, string nextToken)
         }
     }
 
-    if (isKeyWord(currToken) == true)
+    if (isKeyWord(currToken) && currToken == "else")
     {
-        if (isKeyWord(nextToken) == true)
+        if (isIf == false)
         {
-            if (currToken == "if" && nextToken == "else")
-            {
-                return "OK";
-            }
-            else
-            {
-                return "illegal used key words!";
-            }
+            return "else without if";
         }
     }
+    //count []{}()
+    if (isDelimeters(currToken) && (currToken == "+" || currToken == "-" || currToken == "="))
+    {
+        if (checkCorrectPlusMinusEqual(currToken) == false)
+        {
+            return "no operator";
+        }
+    }
+
     return "OK";
     //--------------------------------------------------------
+}
+
+void analyzer_t::setFlag(string token)
+{
+    if (token == "if")
+    {
+        isIf = true;
+    }
+}
+
+bool analyzer_t::isLegalVar(string token)
+{
+    if (!(isalpha(token.at(0))))
+    {
+        return false;
+    }
 }
 
 bool analyzer_t::isKeyWord(string token)
@@ -161,7 +243,8 @@ bool analyzer_t::isOperator(string token)
 
 bool analyzer_t::isDelimeters(string token)
 {
-    iter_t it = find(delimeters.begin(), delimeters.end(), token);
+    iter_t it;
+    it = find(delimeters.begin(), delimeters.end(), token);
 
     if (it != delimeters.end()) //find
     {
@@ -176,17 +259,33 @@ bool analyzer_t::isDelimeters(string token)
 bool analyzer_t::isDeclared(string token)
 {
     //check if already declared
-    iter_t it = find(declaredVariabls.begin(), declaredVariabls.end(), token);
-    if (it != tOperators.end()) //find
+    iter_t it;
+    it = find(declaredVariabls.begin(), declaredVariabls.end(), token);
+
+    if (it != declaredVariabls.end()) //
     {
-        return true; //already declared
+        return true; //find - already declared
     }
     else
     {
         false;
     }
 }
-
+void analyzer_t::resetCounters(string str)
+{
+    if (str == "+")
+    {
+        counterPlus == 0;
+    }
+    else if (str == "-")
+    {
+        counterMinus == 0;
+    }
+    else if (str == "+")
+    {
+        counterEqual == 0;
+    }
+}
 void analyzer_t::incDecCounters(string token)
 {
     if (token == "(")
@@ -215,22 +314,50 @@ void analyzer_t::incDecCounters(string token)
     }
 }
 
-// bool analyzer_t::onOffIfElseFlag(string token)
-// {
-//     // if(token =="if")
-//     // {
-//     //     counterIfElse++;
-//     // }
-//     // else if(token == "else")
-//     // {
-//     //     if (counterIfElse == 0)
-//     //     {
-//     //         return false;
-//     //     }
-//     //     else
-//     //     {
-//     //         counterIfElse--;
-//     //     }
-//     // }
-//     // return true
-// }
+bool analyzer_t::checkCorrectPlusMinusEqual(string token)
+{
+    if (token == "+")
+    {
+
+        if (counterPlus >= 2)
+        {
+            counterPlus == 0;
+            return false;
+        }
+        else
+        {
+            counterMinus = 0;
+            counterEqual = 0;
+            counterPlus++;
+        }
+    }
+    else if (token == "-")
+    {
+        if (counterMinus >= 2)
+        {
+            counterMinus == 0;
+            return false;
+        }
+        else
+        {
+            counterEqual =0;
+            counterPlus = 0;
+            counterMinus++;
+        }
+    }
+    else if (token == "=")
+    {
+        if (counterEqual >= 2)
+        {
+            counterEqual = 0;
+            return false;
+        }
+        else
+        {
+            counterMinus = 0;
+            counterPlus = 0;
+            counterEqual++;
+        }
+    }
+    return true;
+}

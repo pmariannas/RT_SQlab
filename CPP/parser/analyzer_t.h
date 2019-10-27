@@ -18,7 +18,7 @@ public:
 
     void analyze(vector<string> &tokenContainer, size_t lineNumber);
     //void setRules();
-    
+    void printVector(const vector<string> &v) const;
 
 private:
     string check2Tokens(string currToken, string nextToken);
@@ -29,6 +29,12 @@ private:
     bool isDeclared(string token);
 
     void incDecCounters(string token);
+    void resetCounters(string str);
+    void setFlag(string token);
+    bool checkCorrectPlusMinusEqual(string token);
+    string lastElementInContainer(string lastElement);
+    bool isLegalVar(string token);
+
     // bool onOffIfElseFlag(string token);
 
     //DATA MEMBERS
@@ -37,19 +43,22 @@ private:
     vector<string> tOperators; // = {"++", "--", "==", "->" , "=", "+", "-", "*", "&", "<<", ">>" };
     vector<string> delimeters;
     vector<string> declaredVariabls;
-    
+
     //FLAGS
     //bool ifElseFlag;
-    bool roundBracketsFlag;  //()
-    bool curlyBracketsFlag;  //{}
-    bool squareBracketsFlag; //[]
+    // bool roundBracketsFlag;  //()
+    // bool curlyBracketsFlag;  //{}
+    // bool squareBracketsFlag; //[]
+    bool isIf;
     bool firstLine;
-    
+
     //COUNTERS
-    size_t counterIfElse;
     size_t counterRoundBrackets;  //()
     size_t counterCurlyBrackets;  //{}
     size_t counterSquareBrackets; //[]
+    size_t counterPlus;           //+
+    size_t counterMinus;          //-
+    size_t counterEqual;          //=
     //ITERATORS
     typedef typename vector<string>::iterator iter_t;
     typedef typename vector<string>::const_iterator citer_t;
@@ -57,24 +66,21 @@ private:
     //NON COPYBLE
     analyzer_t(const analyzer_t &a);            //copy CTOR
     analyzer_t &operator=(const analyzer_t &a); //operator =
-
 };
 
 #endif
 
-
-
- // typedef enum Status
-    // {
-    //     legal,
-    //     no_main_before,
-    //     illegal_declaration_before_main,
-    //     multiple_type_declaration,
-    //     isnt_defined,
-    //     no_operator,
-    //     illigal_operator,
-    //     variable_already_declared,
-    //     not_declared,
-    //     braces_error,
-    //     not_key_word
-    // } Status;
+// typedef enum Status
+// {
+//     legal,
+//     no_main_before,
+//     illegal_declaration_before_main,
+//     multiple_type_declaration,
+//     isnt_defined,
+//     no_operator,
+//     illigal_operator,
+//     variable_already_declared,
+//     not_declared,
+//     braces_error,
+//     not_key_word
+// } Status;

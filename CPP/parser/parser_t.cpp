@@ -28,7 +28,7 @@ void parser_t::parseFunction(const char *filePath)
         while (getline(m_file, fileLine) > 0)
         {
             m_tokenizer->tokenize(fileLine, tokenContainer);
-            // m_tokenizer->printTokens(tokenContainer);
+            //m_tokenizer->printTokens(tokenContainer);
             m_analyzer->analyze(tokenContainer, lineNumber);
             lineNumber++;
         }

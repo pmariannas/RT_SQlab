@@ -8,7 +8,7 @@ int main()
     cout << "HELLO TO PARSER!" << endl;
     try
     {
-        parser.parseFunction("parserFile.txt");
+        parser.parseFunction("parser_qq.txt");
     }
     catch (const char* e)
     {
