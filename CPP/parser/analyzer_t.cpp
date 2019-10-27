@@ -52,7 +52,17 @@ void analyzer_t::printVector(const vector<string> &v) const
 void analyzer_t::analyze(vector<string> &tokenContainer, size_t lineNumber)
 {
     int i;
-
+    if (lineNumber == 1 && firstLine == true)
+    {
+        string currToken = tokenContainer[0];
+        firstLine = false;
+        int ans = currToken.compare("main");
+        if (ans != 0)
+        {
+            cout << "Error in line: " << lineNumber << " , "
+                 << "no main before" << endl;
+        }
+    }
     for (i = 0; i < tokenContainer.size(); i++)
     {
         if (tokenContainer.size() == 1) //if size container 1
@@ -71,17 +81,6 @@ void analyzer_t::analyze(vector<string> &tokenContainer, size_t lineNumber)
             {
                 string currToken = tokenContainer[i];
                 string nextToken = tokenContainer[nextIndex];
-
-                if (lineNumber == 1 && firstLine == true)
-                {
-                    firstLine = false;
-                    int ans = currToken.compare("main");
-                    if (ans != 0)
-                    {
-                        cout << "Error in line: " << lineNumber << " , "
-                             << "no main before" << endl;
-                    }
-                }
 
                 if (isIf == false)
                 {
@@ -340,7 +339,7 @@ bool analyzer_t::checkCorrectPlusMinusEqual(string token)
         }
         else
         {
-            counterEqual =0;
+            counterEqual = 0;
             counterPlus = 0;
             counterMinus++;
         }
