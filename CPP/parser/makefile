@@ -4,7 +4,7 @@ CFLAGS = -ansi -pedantic
 INCLUDES = 
 LIBS =-lm
 
-SRCS = mainTest.cpp parser_t.cpp analyzer_t.cpp
+SRCS = mainTest.cpp parser_t.cpp analyzer_t.cpp tokenizer_t.cpp
 
 OBJS = $(SRCS:.c=.o)
 

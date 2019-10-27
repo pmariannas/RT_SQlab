@@ -5,8 +5,15 @@
 int main()
 {
     parser_t parser;
-    cout<<"HELLO TO PARSER!"<<endl;
-    
-    parser.parseFunction("parserFile.txt");   
+    cout << "HELLO TO PARSER!" << endl;
+    try
+    {
+        parser.parseFunction("parserFile.txt");
+    }
+    catch (const char* e)
+    {
+        cout << e << endl;;
+    }
+
     return 0;
 }

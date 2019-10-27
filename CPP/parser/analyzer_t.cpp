@@ -7,12 +7,14 @@ analyzer_t::analyzer_t()
     counterRoundBrackets = 0;
     counterCurlyBrackets = 0;
     counterSquareBrackets = 0;
-    firstLine = 0;
+    firstLine = 1;
+
 
     string pt[] = {"char", "short", "int", "long", "float", "double", "void"};
     string kw[] = {"if", "else", "for", "while", "class", "private", "public", "protected", "main", "const", "virtual"};
     string op[] = {"++", "--", "==", "->", "=", "+", "-", "*", "&", "<<", ">>"};
-    string dl[] = {"(", ")", "{", "}", "[", "]", "<", ">", ";", "=", "+", "-", "*", "&"};
+    string dl[] = {"(", ")", "{", "}", "[", "]", "<", ">", ";", "=", "+", "-", "*", "&"};       
+    
     for (i = 0; i < sizeof(pt) / sizeof(string); i++)
     {
         predTypes.push_back(pt[i]);
@@ -31,22 +33,28 @@ analyzer_t::analyzer_t()
     }
 }
 
+// void analyzer_t::setRules()
+// {
+//     string predTypes[] = {"char", "short", "int", "long", "float", "double", "void"};
+//     string keyWords[] = {"if", "else", "for", "while", "class", "private", "public", "protected", "main", "const", "virtual"};
+//     string tOperators[] = {"++", "--", "==", "->", "=", "+", "-", "*", "&", "<<", ">>"};
+//     string delimeters[] = {"(", ")", "{", "}", "[", "]", "<", ">", ";", "=", "+", "-", "*", "&"};
+// }
+
 void analyzer_t::analyze(vector<string> &tokenContainer, size_t lineNumber)
 {
     int i;
-    cout << "%%%%%%%%" << tokenContainer.size() << endl;
     for (i = 0; i < tokenContainer.size(); i++)
     {
-        if (i + 1 < tokenContainer.size())
+        int nextIndex = i + 1;
+        if (nextIndex < tokenContainer.size())
         {
-            int nextIndex = i + 1;
-
             string currToken = tokenContainer[i];
             string nextToken = tokenContainer[nextIndex];
-
-            if (lineNumber == 1 && firstLine == false)
+            
+            if (lineNumber == 1 && firstLine == true)
             {
-                firstLine = true;
+                firstLine = false;
                 int ans = currToken.compare("main");
                 if (ans != 0)
                 {
@@ -67,7 +75,6 @@ void analyzer_t::analyze(vector<string> &tokenContainer, size_t lineNumber)
 string analyzer_t::check2Tokens(string currToken, string nextToken)
 {
     iter_t it;
-    cout << "check2Tokens: " << currToken << nextToken << endl;
     //check if token is type like int or float
     bool ans = isPredType(currToken);
     if (ans == true)
@@ -180,33 +187,33 @@ bool analyzer_t::isDeclared(string token)
     }
 }
 
-// void analyzer_t::incDecCounters(string token)
-// {
-//     if (token == "(")
-//     {
-//         counterRoundBrackets++;
-//     }
-//     else if (token == ")")
-//     {
-//         counterRoundBrackets--;
-//     }
-//     else if (token == "{")
-//     {
-//         counterCurlyBrackets++;
-//     }
-//     else if (token == "}")
-//     {
-//         counterCurlyBrackets--;
-//     }
-//     else if (token == "[")
-//     {
-//         counterSquareBrackets++;
-//     }
-//     else if (token == "]")
-//     {
-//         counterSquareBrackets--;
-//     }
-// }
+void analyzer_t::incDecCounters(string token)
+{
+    if (token == "(")
+    {
+        counterRoundBrackets++;
+    }
+    else if (token == ")")
+    {
+        counterRoundBrackets--;
+    }
+    else if (token == "{")
+    {
+        counterCurlyBrackets++;
+    }
+    else if (token == "}")
+    {
+        counterCurlyBrackets--;
+    }
+    else if (token == "[")
+    {
+        counterSquareBrackets++;
+    }
+    else if (token == "]")
+    {
+        counterSquareBrackets--;
+    }
+}
 
 // bool analyzer_t::onOffIfElseFlag(string token)
 // {
