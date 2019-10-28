@@ -164,11 +164,14 @@ string analyzer_t::check2Tokens(string currToken, string nextToken)
         }
     }
 
-    if (isKeyWord(currToken) && currToken == "else")
+    if (isKeyWord(currToken))
     {
-        if (isIf == false)
+        if (currToken == "else")
         {
-            return "else without if";
+            if (isIf == false)
+            {
+                return "else without if";
+            }
         }
     }
     //count
@@ -317,24 +320,23 @@ string analyzer_t::incDecCounters(string token)
 
     // }
 
-    if(counterRoundBrackets < 0)
-        {
-            counterRoundBrackets = 0;
-            return "illegal '(' has to be before ')'";
-        }
-    else if(counterCurlyBrackets < 0)
-        {
-            counterCurlyBrackets = 0;
-            return "illegal '{' has to be before '}'";
-        }
-        else if(counterSquareBrackets < 0)
-        {
-            counterSquareBrackets = 0;
-            return "illegal '[' has to be before ']'";
-        }
+    if (counterRoundBrackets < 0)
+    {
+        counterRoundBrackets = 0;
+        return "illegal '(' has to be before ')'";
+    }
+    else if (counterCurlyBrackets < 0)
+    {
+        counterCurlyBrackets = 0;
+        return "illegal '{' has to be before '}'";
+    }
+    else if (counterSquareBrackets < 0)
+    {
+        counterSquareBrackets = 0;
+        return "illegal '[' has to be before ']'";
+    }
 
-    return"OK";
-        
+    return "OK";
 }
 
 void analyzer_t::statusOfBrackets()
@@ -345,10 +347,9 @@ void analyzer_t::statusOfBrackets()
         {
             for (int i = 0; i < counterRoundBrackets; i++)
             {
-                cout << " ( NOT closed"<<endl; 
+                cout << " ( NOT closed" << endl;
             }
         }
-        
     }
     if (counterCurlyBrackets != 0)
     {
@@ -356,10 +357,9 @@ void analyzer_t::statusOfBrackets()
         {
             for (int i = 0; i < counterCurlyBrackets; i++)
             {
-                cout << " { NOT closed"<<endl; 
+                cout << " { NOT closed" << endl;
             }
         }
-       
     }
     if (counterSquareBrackets != 0)
     {
@@ -368,10 +368,9 @@ void analyzer_t::statusOfBrackets()
         {
             for (int i = 0; i < counterSquareBrackets; i++)
             {
-                cout << " [ NOT closed"<<endl; 
+                cout << " [ NOT closed" << endl;
             }
         }
-        
     }
     clearCounters();
     declaredVariabls.clear();
@@ -425,19 +424,17 @@ bool analyzer_t::checkCorrectPlusMinusEqual(string token)
     return true;
 }
 
-
 void analyzer_t::clearCounters()
 {
 
-    isIf =0;
-    firstLine =1 ;
-    
+    isIf = 0;
+    firstLine = 1;
 
     //COUNTERS
-     counterRoundBrackets =0;  //()
-     counterCurlyBrackets =0;  //{}
-     counterSquareBrackets =0; //[]
-     counterPlus =0;           //+
-     counterMinus =0;          //-
-     counterEqual =0;
+    counterRoundBrackets = 0;  //()
+    counterCurlyBrackets = 0;  //{}
+    counterSquareBrackets = 0; //[]
+    counterPlus = 0;           //+
+    counterMinus = 0;          //-
+    counterEqual = 0;
 }
