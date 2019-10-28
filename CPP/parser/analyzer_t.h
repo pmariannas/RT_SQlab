@@ -19,8 +19,14 @@ public:
     void analyze(vector<string> &tokenContainer, size_t lineNumber);
     //void setRules();
     void printVector(const vector<string> &v) const;
-
+void statusOfBrackets();
 private:
+
+    void clearPlusMinus() { counterPlus = 0; counterMinus = 0; }
+    void clearCounters();
+
+
+
     string check2Tokens(string currToken, string nextToken);
     bool isPredType(string token);
     bool isKeyWord(string token);
@@ -28,12 +34,13 @@ private:
     bool isDelimeters(string token);
     bool isDeclared(string token);
 
-    void incDecCounters(string token);
-    void resetCounters(string str);
+    string incDecCounters(string token);
     void setFlag(string token);
     bool checkCorrectPlusMinusEqual(string token);
     string lastElementInContainer(string lastElement);
     bool isLegalVar(string token);
+    
+
 
     // bool onOffIfElseFlag(string token);
 
@@ -51,11 +58,12 @@ private:
     // bool squareBracketsFlag; //[]
     bool isIf;
     bool firstLine;
+    bool lastLine;
 
     //COUNTERS
-    size_t counterRoundBrackets;  //()
-    size_t counterCurlyBrackets;  //{}
-    size_t counterSquareBrackets; //[]
+    int counterRoundBrackets;  //()
+    int counterCurlyBrackets;  //{}
+    int counterSquareBrackets; //[]
     size_t counterPlus;           //+
     size_t counterMinus;          //-
     size_t counterEqual;          //=

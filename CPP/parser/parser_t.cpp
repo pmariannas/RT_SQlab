@@ -32,7 +32,7 @@ void parser_t::parseFunction(const char *filePath)
             m_analyzer->analyze(tokenContainer, lineNumber);
             lineNumber++;
         }
-        
+        m_analyzer->statusOfBrackets();
         m_file.close();
     }
     else

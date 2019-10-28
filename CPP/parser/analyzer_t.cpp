@@ -7,6 +7,7 @@ analyzer_t::analyzer_t()
     counterCurlyBrackets = 0;
     counterSquareBrackets = 0;
     firstLine = 1;
+    lastLine = 0;
     isIf = false;
     // declaredVariabls.push_back("");
 
@@ -107,6 +108,7 @@ void analyzer_t::analyze(vector<string> &tokenContainer, size_t lineNumber)
         }
     }
 }
+
 string analyzer_t::lastElementInContainer(string lastElement)
 {
 
@@ -169,12 +171,21 @@ string analyzer_t::check2Tokens(string currToken, string nextToken)
             return "else without if";
         }
     }
-    //count []{}()
+    //count
     if (isDelimeters(currToken) && (currToken == "+" || currToken == "-" || currToken == "="))
     {
         if (checkCorrectPlusMinusEqual(currToken) == false)
         {
             return "no operator";
+        }
+    }
+    if (isDelimeters(currToken))
+    {
+        if (currToken == "(" || currToken == ")" || currToken == "{" || currToken == "}" || currToken == "[" || currToken == "]" || currToken == "<" || currToken == ">")
+        {
+            string mymsg;
+            mymsg = incDecCounters(currToken);
+            return mymsg;
         }
     }
 
@@ -270,22 +281,8 @@ bool analyzer_t::isDeclared(string token)
         false;
     }
 }
-void analyzer_t::resetCounters(string str)
-{
-    if (str == "+")
-    {
-        counterPlus == 0;
-    }
-    else if (str == "-")
-    {
-        counterMinus == 0;
-    }
-    else if (str == "+")
-    {
-        counterEqual == 0;
-    }
-}
-void analyzer_t::incDecCounters(string token)
+
+string analyzer_t::incDecCounters(string token)
 {
     if (token == "(")
     {
@@ -311,6 +308,73 @@ void analyzer_t::incDecCounters(string token)
     {
         counterSquareBrackets--;
     }
+    // else if(token == "<")
+    // {
+
+    // }
+    // else if( token == ">")
+    // {
+
+    // }
+
+    if(counterRoundBrackets < 0)
+        {
+            counterRoundBrackets = 0;
+            return "illegal '(' has to be before ')'";
+        }
+    else if(counterCurlyBrackets < 0)
+        {
+            counterCurlyBrackets = 0;
+            return "illegal '{' has to be before '}'";
+        }
+        else if(counterSquareBrackets < 0)
+        {
+            counterSquareBrackets = 0;
+            return "illegal '[' has to be before ']'";
+        }
+
+    return"OK";
+        
+}
+
+void analyzer_t::statusOfBrackets()
+{
+    if (counterRoundBrackets != 0)
+    {
+        if (counterRoundBrackets > 0)
+        {
+            for (int i = 0; i < counterRoundBrackets; i++)
+            {
+                cout << " ( NOT closed"<<endl; 
+            }
+        }
+        
+    }
+    if (counterCurlyBrackets != 0)
+    {
+        if (counterCurlyBrackets > 0)
+        {
+            for (int i = 0; i < counterCurlyBrackets; i++)
+            {
+                cout << " { NOT closed"<<endl; 
+            }
+        }
+       
+    }
+    if (counterSquareBrackets != 0)
+    {
+
+        if (counterSquareBrackets > 0)
+        {
+            for (int i = 0; i < counterSquareBrackets; i++)
+            {
+                cout << " [ NOT closed"<<endl; 
+            }
+        }
+        
+    }
+    clearCounters();
+    declaredVariabls.clear();
 }
 
 bool analyzer_t::checkCorrectPlusMinusEqual(string token)
@@ -359,4 +423,21 @@ bool analyzer_t::checkCorrectPlusMinusEqual(string token)
         }
     }
     return true;
+}
+
+
+void analyzer_t::clearCounters()
+{
+
+    isIf =0;
+    firstLine =1 ;
+    
+
+    //COUNTERS
+     counterRoundBrackets =0;  //()
+     counterCurlyBrackets =0;  //{}
+     counterSquareBrackets =0; //[]
+     counterPlus =0;           //+
+     counterMinus =0;          //-
+     counterEqual =0;
 }
