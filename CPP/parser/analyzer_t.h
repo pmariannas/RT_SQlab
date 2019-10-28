@@ -39,7 +39,8 @@ private:
     bool checkCorrectPlusMinusEqual(string token);
     string lastElementInContainer(string lastElement);
     bool isLegalVar(string token);
-    
+    string isMain(string currToken);
+
 
 
     // bool onOffIfElseFlag(string token);

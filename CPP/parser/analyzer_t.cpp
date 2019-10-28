@@ -42,37 +42,37 @@ void analyzer_t::printVector(const vector<string> &v) const
         cout << v[i] << "   ";
     }
 }
-// void analyzer_t::setRules()
-// {
-//     string predTypes[] = {"char", "short", "int", "long", "float", "double", "void"};
-//     string keyWords[] = {"if", "else", "for", "while", "class", "private", "public", "protected", "main", "const", "virtual"};
-//     string tOperators[] = {"++", "--", "==", "->", "=", "+", "-", "*", "&", "<<", ">>"};
-//     string delimeters[] = {"(", ")", "{", "}", "[", "]", "<", ">", ";", "=", "+", "-", "*", "&"};
-// }
 
 void analyzer_t::analyze(vector<string> &tokenContainer, size_t lineNumber)
 {
     int i;
-    if (lineNumber == 1 && firstLine == true)
+
+    if (firstLine == true)
     {
+
         string currToken = tokenContainer[0];
-        firstLine = false;
-        int ans = currToken.compare("main");
-        if (ans != 0)
+        if (currToken.size() > 1)
         {
-            cout << "Error in line: " << lineNumber << " , "
-                 << "no main before" << endl;
+            if (currToken != "main")
+                firstLine = false;
+            int ans = currToken.compare("main");
+            if (ans != 0)
+            {
+                cout << "Error in line: " << lineNumber << " , "
+                     << "illigal declaretion before main" << endl;
+            }
         }
     }
     for (i = 0; i < tokenContainer.size(); i++)
     {
+
         if (tokenContainer.size() == 1) //if size container 1
         {
             string lastElement = tokenContainer[i];
             string st = lastElementInContainer(lastElement);
             if (st != "OK")
             {
-                cout << "Error in line: " << lineNumber << " , " << st << endl;
+                cout << "Error in line: " << lineNumber << " , " << lastElement << st << endl;
             }
         }
         else
@@ -102,7 +102,7 @@ void analyzer_t::analyze(vector<string> &tokenContainer, size_t lineNumber)
                 string st = lastElementInContainer(lastElement);
                 if (st != "OK")
                 {
-                    cout << "Error in line: " << lineNumber << " , " << st << endl;
+                    cout << "Error in line: " << lineNumber << " , " << lastElement << st << endl;
                 }
             }
         }
@@ -138,23 +138,38 @@ string analyzer_t::check2Tokens(string currToken, string nextToken)
 {
     iter_t it;
 
+    if (!isPredType(currToken) &&
+        !isDelimeters(currToken) &&
+        !isKeyWord(currToken) &&
+        !isDeclared(currToken))
+    {
+        if (isalpha(currToken.at(0)))
+        {
+            return currToken + "  is not declears";
+        }
+    }
+
     //check if token is type like int or float
     if (isPredType(currToken) == true)
     {
+       
         if (isPredType(nextToken) == true)
         {
-            return "multiple_type_declaration"; //error multiple type declaration
+            return nextToken + "  multiple_type_declaration"; //error multiple type declaration
         }
         else if (!isalpha(nextToken.at(0)))
         {
-            return "illegal variable";
+            return " invalid variable name";
         }
-
+        else if(isKeyWord(nextToken)==true)
+        {
+            return " invalid variable declaretion";
+        }
         else
         {
             if (isDeclared(nextToken))
             {
-                return "variable_already_declared";
+                return nextToken + "  variable_already_declared";
             }
             else
             {
@@ -175,11 +190,28 @@ string analyzer_t::check2Tokens(string currToken, string nextToken)
         }
     }
     //count
-    if (isDelimeters(currToken) && (currToken == "+" || currToken == "-" || currToken == "="))
+    if (isDelimeters(currToken))
     {
-        if (checkCorrectPlusMinusEqual(currToken) == false)
+        if (currToken == "+")
         {
-            return "no operator";
+            if (checkCorrectPlusMinusEqual(currToken) == false)
+            {
+                return "no operator +++";
+            }
+        }
+        else if (currToken == "-")
+        {
+            if (checkCorrectPlusMinusEqual(currToken) == false)
+            {
+                return "no operator ---";
+            }
+        }
+        else if (currToken == "=")
+        {
+            if (checkCorrectPlusMinusEqual(currToken) == false)
+            {
+                return "no operator ===";
+            }
         }
     }
     if (isDelimeters(currToken))
@@ -345,20 +377,16 @@ void analyzer_t::statusOfBrackets()
     {
         if (counterRoundBrackets > 0)
         {
-            for (int i = 0; i < counterRoundBrackets; i++)
-            {
-                cout << " ( NOT closed" << endl;
-            }
+
+            cout << counterRoundBrackets << " ( NOT closed" << endl;
         }
     }
     if (counterCurlyBrackets != 0)
     {
         if (counterCurlyBrackets > 0)
         {
-            for (int i = 0; i < counterCurlyBrackets; i++)
-            {
-                cout << " { NOT closed" << endl;
-            }
+
+            cout << counterCurlyBrackets << " { NOT closed" << endl;
         }
     }
     if (counterSquareBrackets != 0)
@@ -366,10 +394,8 @@ void analyzer_t::statusOfBrackets()
 
         if (counterSquareBrackets > 0)
         {
-            for (int i = 0; i < counterSquareBrackets; i++)
-            {
-                cout << " [ NOT closed" << endl;
-            }
+
+            cout << counterSquareBrackets << " [ NOT closed" << endl;
         }
     }
     clearCounters();
