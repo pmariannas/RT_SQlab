@@ -1,0 +1,2 @@
+gcc one.c -o one -lrt
+gcc two.c -o two -lrt
