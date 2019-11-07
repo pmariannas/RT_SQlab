@@ -20,7 +20,7 @@ int main()
 	int shm_fd; 
 
 	/* pointer to shared memory object */
-	void* ptr; 
+	int* ptr; 
 
 	/* open the shared memory object */
 	shm_fd = shm_open(name, O_RDONLY, 0666); 
@@ -30,7 +30,8 @@ int main()
 	
 	while(1)
 	{
-		printf("The value is:%s \n", ((char*)ptr));
+		/*printf("The value is:%s \n", ((char*)ptr));*/
+			printf("The value is:%d \n", (*ptr));
 		sleep(1);
 	}
 	/* read from the shared memory object */

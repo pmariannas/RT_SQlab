@@ -24,7 +24,7 @@ int main()
 	int shm_fd; 
 
 	/* pointer to shared memory obect */
-	void* ptr; 
+	int* ptr; 
 
 	/* create the shared memory object */
 	shm_fd = shm_open(name, O_CREAT | O_RDWR,0666); 
@@ -34,12 +34,13 @@ int main()
 
 	/* memory map the shared memory object */
 	ptr = mmap(0, SIZE, PROT_WRITE, MAP_SHARED, shm_fd, 0); 
-
+	*ptr = 1;
 	while(1)
 	{
-		sprintf(ptr, "%s", message_0); 
+		/*sprintf(ptr, "%s", message_0); 
+		ptr += strlen(message_0);*/
+		*ptr +=1;
 
-	ptr += strlen(message_0);
 		sleep(1);
 	}
 	/* write to the shared memory object */
