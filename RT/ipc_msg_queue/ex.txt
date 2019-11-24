@@ -1,0 +1,73 @@
+Kernel exercise for RT programmers
+
+==================================
+
+- create a kernel module that allows for inter-process communication
+
+in Linux.
+
+- the module, on insertion into the kernel, will create 8 files called
+
+/dev/mq[0-8) that will allow that user space communication.
+
+- A user process, when wanting to send a message to message queue
+
+number N will open the file "/dev/mqN" and use ioctl(MQ_SEND_MSG, ...)
+
+to send the message.
+
+- A user process, when wanting to read a message from the message queue
+
+number N will open the file "/dev/mqN" and use ioctl(MQ_RECV_MSG, ...)
+
+to receive the message.
+
+Techinical specs
+
+================
+
+- Messages are no more than 4096 bytes long.
+
+- A queue may hold up to 100 messages. Trying to put the 101 message
+
+will result in either putting the process to sleep until space
+
+in the message queue opens up or returning a special error code.
+
+Synchronization gotchas
+
+=======================
+
+- your 'open' function may be called several time simultaneously by
+
+several processes on the same MQ.
+
+- several processes my call MQ_SEND_MSG on the same queue at the same
+
+time.
+
+- several processes my call MQ_RECV_MSG on the same queue at the same
+
+time.
+
+- a process may call MQ_SEND_MSG on queue N while at the same time
+
+another process called MQ_RECV_MSG on the same queue N.
+
+Writing considerations
+
+======================
+
+- write a makefile for the project.
+
+- write an app called send_msg which can be used like this:
+
+    $ send_msg /dev/mq5 hello
+
+- write an app called recv_msg which can be used like this:
+
+    $ recv_msg /dev/mq5
+
+    hello
+
+    $
