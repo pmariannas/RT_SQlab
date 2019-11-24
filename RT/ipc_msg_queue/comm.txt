@@ -1,0 +1,4 @@
+make
+sudo insmod ____.ko
+lsmod | head
+sudo rmmod ____.ko
