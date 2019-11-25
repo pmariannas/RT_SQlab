@@ -5,13 +5,21 @@
 #include <linux/cdev.h> 
 #include <linux/printk.h> /*for pr_err*/
 #include <linux/list.h>
+#include <linux/uaccess.h>
+#include <linux/wait.h>
+#include <linux/spinlock.h>
+#include <linux/sched.h>
+
+#include "myQueueM.h"
+
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Marianna");
 MODULE_DESCRIPTION("implementation for IPC");
 
 
-static int queue_count = 8;
+static int QUEUE_COUNT = 8;
+const size_t MESSAGE_SIZE = 4096;
 /*static int first_minor;*/
 /* this is the first dev_t allocated to us... */
 static dev_t first_dev;
@@ -22,11 +30,12 @@ static struct cdev my_cdev;
 static LIST_HEAD(message_list);
 
 
-/* struct for queue */
-struct queue_t {
+/* struct for mess queue */
+struct mq_t {
 	struct device* mq_dev;
-	struct list_head node;
-	size_t size;//count of mgs in list 
+	struct list_head head;
+	size_t numOfMess;//count of mgs in list 
+	/*wait_queue_head_t mq_busy_wait; */ /*p. 309*/
 	/*
 	size_t capacity;
 	size_t front;
@@ -36,65 +45,164 @@ struct queue_t {
 	
 };
 
-/* automatically initialised to NULL... */
-static struct queue_t *buffer;
+/* struct for node */
+struct node_t {
+	struct list_head headNode;	
+	size_t sizeOfData;
+	char* dataMess;
+};
 
-/* pipe constructur */
-static inline void queue_ctor(struct queue_t *queue)
+
+/* automatically initialised to NULL... */
+static struct mq_t * mq;
+
+/*  constructur */
+static inline void queue_ctor(struct mq_t *mq)
 {
+	mq->numOfMess = 0;
+	INIT_LIST_HEAD(&(mq->head));
 	/*TO DO*/
 }
 
-/* queue destructor */
-static inline void queue_dtor(const struct queue_t *queue)
+/*  destructor */
+static inline void queue_dtor(const struct mq_t *mq)
 {
-	/*kfree(queue->mq_dev);*/
+	/*TO DO*/
 }
-
-
-static int queue_open(struct inode *inode, struct file *file)
+/*queue_open*/
+static int queue_open(struct inode *inode, struct file *pfile)
 {	
-	pr_info("we are here in open function!!!\n");
+	int queue_num = iminor(inode)-MINOR(first_dev);
+	struct mq_t* my_mq = mq+queue_num;
+	pfile->private_data = my_mq;/*???*/
+
 	return 0;
 }
 
+static long mq_ioctl(struct file *pfile ,unsigned int option, unsigned long usr_buff)
+{
+	struct mq_t * mq = pfile->private_data;
+
+	int err;
+	int sizeOfRead;
+	char* my_buff;
+	struct mq_reg r;
+	struct mq_reg * argp = (struct mq_reg *)usr_buff;
+	struct node_t * new_node; 
+
+	switch(option)
+	{
+		case MQ_RECV_MSG:	/*get*/
+		{
+			/*wake_up_interruptible(&my_mq);*/
+			/*list_entry — get the struct for this entry */
+			new_node = list_entry(&(mq->head), struct node_t , headNode);
+			my_buff = kmalloc(sizeof(char)*new_node->sizeOfData, GFP_KERNEL);
+			if(IS_ERR(my_buff))
+			{
+				pr_err("%s: error in kmalloc\n", THIS_MODULE->name);
+				err = PTR_ERR(my_buff);
+				return err;
+			}
+			/*copy_to_user — Copy a block of data into user space. */
+			/*	to - Destination address, in user space. 
+				from - Source address, in kernel space. 
+				n - Number of bytes to copy. */
+			err = copy_to_user(my_buff, &(new_node->dataMess), new_node->sizeOfData);
+			if(err)
+			{
+				pr_err("%s: error in copy from user\n", THIS_MODULE->name);
+				return err;
+			}
+			r.data = my_buff;
+			r.size = new_node->sizeOfData ;
+			sizeOfRead = r.size;
+			list_del_init(&(mq->head));
+			mq->numOfMess--;
+			return sizeOfRead;
+			break;
+		}
+
+		case MQ_SEND_MSG: /*set*/
+		{
+			err = copy_from_user(&r, argp, sizeof(r));
+			if(err)
+			{
+				pr_err("%s: error in copy from user\n", THIS_MODULE->name);
+				return err;
+			}
+
+			my_buff = (char*)kmalloc(r.size, GFP_KERNEL); 
+			if(IS_ERR(my_buff))
+			{
+				pr_err("%s: error in kmalloc\n", THIS_MODULE->name);
+				err = PTR_ERR(my_buff);
+				return err;
+			}
+
+			err = copy_from_user(my_buff, r.data, r.size);
+			if(err<0)
+			{
+				pr_err("%s: error in copy from user\n", THIS_MODULE->name);
+				return err;
+			}
+
+			new_node = kmalloc(sizeof(new_node), GFP_KERNEL);
+			if(IS_ERR(new_node))
+			{
+				pr_err("%s: error in kmalloc\n", THIS_MODULE->name);
+				err = PTR_ERR(new_node);
+				return err;
+			}
+			new_node->dataMess = my_buff;
+			new_node->sizeOfData = r.size;
+			list_add_tail((&new_node->headNode),&(mq->head));
+			mq->numOfMess++ ; 
+			return r.size;
+			/*init_waitqueue_head(&my_mq->mq_busy_wait); */ /*p. 310 */
+			break; 
+		}
+	}
+
+	return 0;
+}
 
 /*
-static int queue_release(struct inode *inode, struct file *file)
+static int queue_release(struct inode *inode, struct file *pfile)
 {
 	pr_info("we are here in release function!!!\n");
 	return 0;
 }
 */
 
-static const struct file_operations queue_fops = {
+/*  struct file_operations */
+static const struct file_operations mq_fops = {
 	.owner = THIS_MODULE,
 	.open = queue_open,
-	/*.ioctl = queue_ioctl,
-	.release = queue_release,*/
+	.unlocked_ioctl = mq_ioctl,
+	/*.release = queue_release,*/
 };
-
 
 static int __init queue_init(void)
 {
 	int err = 0;
 	int i;
 	/* allocate queue */
-	buffer = kmalloc(sizeof(struct queue_t)*queue_count, GFP_KERNEL);
-	if (IS_ERR(buffer)) {
+	mq = kmalloc(sizeof(struct mq_t)*QUEUE_COUNT, GFP_KERNEL);
+	if (IS_ERR(mq)) {
 		pr_err("kmalloc\n");
-		err = PTR_ERR(buffer);
+		err = PTR_ERR(mq);
 		goto err_return;
 	}
 	/* initialize queue */
-	for (i = 0; i < queue_count; i++)
+	for (i = 0; i < QUEUE_COUNT; i++)
 	{
-		queue_ctor(buffer+i);
+		queue_ctor(mq+i);
 	}
 		
 
 	/* allocate our own range of devices */
-	err = alloc_chrdev_region(&first_dev, 0, queue_count, THIS_MODULE->name);
+	err = alloc_chrdev_region(&first_dev, 0, QUEUE_COUNT, THIS_MODULE->name);
 	if (err) {
 		pr_err("cannot alloc_chrdev_region\n");
 		goto err_final;
@@ -102,10 +210,10 @@ static int __init queue_init(void)
 	pr_info("allocated the region\n");
 	
 	/* add the cdev structure, no error codes */
-	cdev_init(&my_cdev, &queue_fops);
+	cdev_init(&my_cdev, &mq_fops);
 	
 	/*add a char device to the system */
-	err = cdev_add(&my_cdev, first_dev, queue_count);
+	err = cdev_add(&my_cdev, first_dev, QUEUE_COUNT);
 	if (err) {
 		pr_err("cannot cdev_add\n");
 		goto err_dealloc;
@@ -124,16 +232,16 @@ static int __init queue_init(void)
 	pr_info("created the class\n");
 
 	/* creates a device for queue */
-	for (i = 0; i < queue_count; i++) 
+	for (i = 0; i < QUEUE_COUNT; i++) 
 	{
 		/* and now lets auto-create a /dev/ node */
-		buffer[i].mq_dev = device_create(my_class, NULL,
+		mq[i].mq_dev = device_create(my_class, NULL,
 			MKDEV(MAJOR(first_dev), MINOR(first_dev)+i),
 			NULL, "%s%d", THIS_MODULE->name, i);
-		if (IS_ERR(buffer[i].mq_dev)) 
+		if (IS_ERR(mq[i].mq_dev)) 
 		{
 			pr_err("device_create\n");
-			err = PTR_ERR(buffer[i].mq_dev);
+			err = PTR_ERR(mq[i].mq_dev);
 			goto err_class;
 		}
 	}
@@ -150,11 +258,11 @@ static int __init queue_init(void)
 err_class:
 	class_destroy(my_class); /*destroys a struct class structure*/
 err_dealloc:
-	unregister_chrdev_region(first_dev, queue_count);
+	unregister_chrdev_region(first_dev, QUEUE_COUNT);
 err_final:
-	for (i = 0; i < queue_count; i++)
-		queue_dtor(buffer+i);
-	kfree(buffer);
+	for (i = 0; i < QUEUE_COUNT; i++)
+		queue_dtor(mq+i);
+	kfree(mq);
 err_return:
 	return err;	
 }
@@ -162,19 +270,19 @@ err_return:
 static void __exit queue_exit(void)
 {
 	int i;
-	for (i = 0; i < queue_count; i++)
+	for (i = 0; i < QUEUE_COUNT; i++)
 	{
 		device_destroy(my_class, MKDEV(MAJOR(first_dev),MINOR(first_dev)+i));
 	}
 	class_destroy(my_class);
 	cdev_del(&my_cdev);
-	unregister_chrdev_region(first_dev, queue_count);
-	for (i = 0; i < queue_count; i++)
+	unregister_chrdev_region(first_dev, QUEUE_COUNT);
+	for (i = 0; i < QUEUE_COUNT; i++)
 	{
-		queue_dtor(buffer+i);
+		queue_dtor(mq+i);
 	}
 
-	kfree(buffer);
+	kfree(mq);
 	pr_info(KBUILD_MODNAME " unloaded successfully\n");
 }
 
