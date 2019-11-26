@@ -32,8 +32,8 @@ static LIST_HEAD(message_list);
 
 /* struct for mess queue */
 struct mq_t {
-	struct device* mq_dev;
 	struct list_head head;
+	struct device* mq_dev;
 	size_t numOfMess;//count of mgs in list 
 	/*wait_queue_head_t mq_busy_wait; */ /*p. 309*/
 	/*
@@ -42,6 +42,7 @@ struct mq_t {
 	size_t rear; 
 	int* array; 
 	*/
+	size_t size;
 	
 };
 
@@ -84,7 +85,9 @@ static long mq_ioctl(struct file *pfile ,unsigned int option, unsigned long usr_
 	struct mq_t * mq = pfile->private_data;
 
 	int err;
-	int sizeOfRead;
+	int ret;
+	int res=0;
+	/*int sizeOfRead;*/
 	char* my_buff;
 	struct mq_reg r;
 	struct mq_reg * argp = (struct mq_reg *)usr_buff;
@@ -94,32 +97,24 @@ static long mq_ioctl(struct file *pfile ,unsigned int option, unsigned long usr_
 	{
 		case MQ_RECV_MSG:	/*get*/
 		{
-			/*wake_up_interruptible(&my_mq);*/
-			/*list_entry — get the struct for this entry */
-			new_node = list_entry(&(mq->head), struct node_t , headNode);
-			my_buff = kmalloc(sizeof(char)*new_node->sizeOfData, GFP_KERNEL);
-			if(IS_ERR(my_buff))
-			{
-				pr_err("%s: error in kmalloc\n", THIS_MODULE->name);
-				err = PTR_ERR(my_buff);
-				return err;
+			/*wait_event_interruptible(mq->wait_queue, list_empty(&mq->head) == 0);*/
+			new_node=list_entry((&mq->head)->prev,struct node_t,headNode);
+			
+			ret=copy_to_user((char*)usr_buff, new_node->dataMess, new_node->sizeOfData);
+			if (ret) {
+				pr_err("%s: error in copy to user\n", THIS_MODULE->name);
+				/*mq_unlock(mq);*/
+				return ret;
 			}
-			/*copy_to_user — Copy a block of data into user space. */
-			/*	to - Destination address, in user space. 
-				from - Source address, in kernel space. 
-				n - Number of bytes to copy. */
-			err = copy_to_user(my_buff, &(new_node->dataMess), new_node->sizeOfData);
-			if(err)
-			{
-				pr_err("%s: error in copy from user\n", THIS_MODULE->name);
-				return err;
-			}
-			r.data = my_buff;
-			r.size = new_node->sizeOfData ;
-			sizeOfRead = r.size;
-			list_del_init(&(mq->head));
-			mq->numOfMess--;
-			return sizeOfRead;
+			
+			list_del((&mq->head)->prev);
+			res = new_node->sizeOfData;
+			kfree(new_node->dataMess);
+			kfree(new_node);
+			/*mq->size--;*/
+			/*mq_unlock(mq);*/
+			return res;
+
 			break;
 		}
 
@@ -131,7 +126,7 @@ static long mq_ioctl(struct file *pfile ,unsigned int option, unsigned long usr_
 				pr_err("%s: error in copy from user\n", THIS_MODULE->name);
 				return err;
 			}
-
+			pr_err("the pointer from user %p  \n", &r);
 			my_buff = (char*)kmalloc(r.size, GFP_KERNEL); 
 			if(IS_ERR(my_buff))
 			{
@@ -164,7 +159,7 @@ static long mq_ioctl(struct file *pfile ,unsigned int option, unsigned long usr_
 		}
 	}
 
-	return 0;
+	return res;
 }
 
 /*
