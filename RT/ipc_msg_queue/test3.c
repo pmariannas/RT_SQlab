@@ -12,6 +12,10 @@
 #include <semaphore.h>
 #include "myQueueM.h"
 
+/************************/
+/****TEST ONE DEVICE****/
+/**********************/
+
 void *putsF(void *arg)
 {
 

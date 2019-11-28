@@ -8,7 +8,7 @@
 struct mq_reg
 {
     char* data;
-    size_t size;
+    int size;
 };
 #pragma pack(pop)
 

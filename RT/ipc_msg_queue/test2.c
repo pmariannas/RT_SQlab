@@ -11,6 +11,9 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include "myQueueM.h"
+/**************************************/
+/****TEST ONE DEVICE WITH WHILE(1)****/
+/************************************/
 
 void *putsF(void *arg)
 {
@@ -76,7 +79,6 @@ void *getsF()
             return (void *)1;
         }
         printf("ret value : %d\n", ret);
-        //printf("the message is %s\n", str);
 
         ret = close(fd);
         if (ret == -1)
@@ -93,25 +95,19 @@ int main(int argc, char **argv, char **envp)
     pthread_t puts[3];
     pthread_t gets[3];
 
-    int i, j, w, z;
+    int i, w;
 
     for (i = 0; i < 3; i++)
     {
         pthread_create(&puts[i], NULL, putsF, &i);
-    }
-    for (j = 0; j < 3; j++)
-    {
-        pthread_create(&gets[j], NULL, getsF, &j);
+        pthread_create(&gets[i], NULL, getsF, &i);
     }
 
     for (w = 0; w < 3; w++)
     {
         pthread_join(puts[w], NULL);
+        pthread_join(gets[w], NULL);
     }
 
-    for (z = 0; z < 3; z++)
-    {
-        pthread_join(gets[z], NULL);
-    }
     return 0;
 }

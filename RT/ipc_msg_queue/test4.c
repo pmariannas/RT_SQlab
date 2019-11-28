@@ -12,16 +12,17 @@
 #include <semaphore.h>
 #include "myQueueM.h"
 
+char *device;
+
 void *putsF(void *arg)
 {
 
     int fd, ret;
-    char *s = "/dev/myQueue1";
-    fd = open(s, O_RDWR);
+    fd = open(device, O_RDWR);
     if (fd == -1)
     {
         fprintf(stderr, "open error\n");
-        return (void *)1;
+        return NULL;
     }
 
     struct mq_reg m;
@@ -35,7 +36,7 @@ void *putsF(void *arg)
     if (ret == -1)
     {
         fprintf(stderr, "ioctl error\n");
-        return (void *)1;
+        return NULL;
     }
     printf("the return value of ioctl is %d\n", ret);
 
@@ -43,7 +44,7 @@ void *putsF(void *arg)
     if (ret == -1)
     {
         fprintf(stderr, "close error\n");
-        return (void *)1;
+        return NULL;
     }
 }
 
@@ -51,12 +52,11 @@ void *getsF()
 {
 
     int fd, ret;
-    char *s = "/dev/myQueue1";
-    fd = open(s, O_RDWR);
+    fd = open(device, O_RDWR);
     if (fd == -1)
     {
         fprintf(stderr, "open error\n");
-        return (void *)1;
+        return NULL;
     }
 
     char *str = (char *)malloc(4096);
@@ -66,16 +66,15 @@ void *getsF()
     if (ret == -1)
     {
         fprintf(stderr, "ioctl error\n");
-        return (void *)1;
+        return NULL;
     }
     printf("ret value : %d\n", ret);
-    //printf("the message is %s\n", str);
 
     ret = close(fd);
     if (ret == -1)
     {
         fprintf(stderr, "close error\n");
-        return (void *)1;
+        return NULL;
     }
 }
 
@@ -85,27 +84,29 @@ int main(int argc, char **argv, char **envp)
     pthread_t puts[100];
     pthread_t gets[100];
 
-    int i, j, w, z;
+    int i, w;
+
+    if (argc == 2)
+    {
+        device = argv[1];
+    }
+    else
+    {
+        return 0;
+    }
 
     for (i = 0; i < 100; i++)
     {
         pthread_create(&puts[i], NULL, putsF, &i);
-        pthread_create(&gets[i], NULL, getsF, &j);
+        pthread_create(&gets[i], NULL, getsF, &i);
     }
-    /*
-    for (j = 0; j < 50; j++)
-    {
-        pthread_create(&gets[j], NULL, getsF, &j);
-    }
-*/
+
     for (w = 0; w < 100; w++)
     {
         pthread_join(puts[w], NULL);
+        pthread_join(gets[w], NULL);
     }
 
-    for (z = 0; z < 100; z++)
-    {
-        pthread_join(gets[z], NULL);
-    }
+    
     return 0;
 }

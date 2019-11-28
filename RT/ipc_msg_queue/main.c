@@ -79,17 +79,12 @@ static int queue_open(struct inode *inode, struct file *pfile)
 	return 0;
 }
 
-static int my_list_mutex_not_empty(struct mq_t *mq)
+static int my_list_not_empty(struct mq_t *mq)
 {
 	int ret;
-	ret = mutex_lock_interruptible(&mq->lockMutex);
-	if (ret != 0)
-	{
-		pr_err("%s: error in lock mutex\n", THIS_MODULE->name);
-		return ret;
-	}
-	ret = list_empty(&mq->head); /*return 0 if list not empty, return true if list empty*/
-	if (ret != 0)				 /*if list empty*/
+	mutex_lock(&mq->lockMutex);
+	ret = !list_empty(&mq->head); /*return 0 if list not empty, return true if list empty*/
+	if (!ret)				 /*if list empty*/
 	{
 		mutex_unlock(&mq->lockMutex); /*release the mutex */
 	}
@@ -111,24 +106,14 @@ static long mq_ioctl(struct file *pfile, unsigned int option, unsigned long usr_
 	{
 	case MQ_RECV_MSG: /*get*/
 	{
-		/*old
-		ret = wait_event_interruptible(mq->mq_wait, list_empty(&mq->head) == 0);
-		*/
-		ret = wait_event_interruptible(mq->mq_wait, my_list_mutex_not_empty(mq) == 0);
+
+		ret = wait_event_interruptible(mq->mq_wait, my_list_not_empty(mq));
 
 		if (ret)
 		{
 			pr_err("%s: error in wait\n", THIS_MODULE->name);
 			return ret;
 		}
-		/*
-		ret = mutex_lock_interruptible(&mq->lockMutex);
-		if (ret)
-		{
-			pr_err("%s: error in lock mutex\n", THIS_MODULE->name);
-			return ret;
-		}
-*/
 
 		new_node = list_entry((&mq->head)->prev, struct node_t, headNode);
 
@@ -141,11 +126,11 @@ static long mq_ioctl(struct file *pfile, unsigned int option, unsigned long usr_
 
 		list_del((&mq->head)->prev);
 		res = new_node->sizeOfData;
+		mq->numOfMess--;
 		mutex_unlock(&mq->lockMutex); /*release the mutex */
 
 		kfree(new_node->dataMess);
-		kfree(new_node);
-		mq->numOfMess--;
+		kfree(new_node);		
 		wake_up_interruptible(&mq->mq_wait);
 		return res;
 
@@ -160,7 +145,7 @@ static long mq_ioctl(struct file *pfile, unsigned int option, unsigned long usr_
 			pr_err("%s: error in copy from user\n", THIS_MODULE->name);
 			return err;
 		}
-		pr_err("the pointer from user %p  \n", &r);
+
 		my_buff = (char *)kmalloc(r.size, GFP_KERNEL);
 		if (IS_ERR(my_buff))
 		{
@@ -185,6 +170,7 @@ static long mq_ioctl(struct file *pfile, unsigned int option, unsigned long usr_
 		}
 		new_node->dataMess = my_buff;
 		new_node->sizeOfData = r.size;
+		
 		ret = mutex_lock_interruptible(&mq->lockMutex);
 		if (ret)
 		{
@@ -196,29 +182,20 @@ static long mq_ioctl(struct file *pfile, unsigned int option, unsigned long usr_
 		mq->numOfMess++;
 		mutex_unlock(&mq->lockMutex); /*release the mutex */
 
-		wake_up_interruptible(&mq->mq_wait);
+		wake_up_all(&mq->mq_wait);
 		return r.size;
 		/*init_waitqueue_head(&my_mq->mq_busy_wait); */ /*p. 310 */
 		break;
-	}
-	}
+	}/*close case*/
+	}/*close switch*/
 	return res;
 }
-
-/*
-static int queue_release(struct inode *inode, struct file *pfile)
-{
-	pr_info("we are here in release function!!!\n");
-	return 0;
-}
-*/
 
 /*  struct file_operations */
 static const struct file_operations mq_fops = {
 	.owner = THIS_MODULE,
 	.open = queue_open,
 	.unlocked_ioctl = mq_ioctl,
-	/*.release = queue_release,*/
 };
 
 static int __init queue_init(void)
@@ -297,8 +274,6 @@ static int __init queue_init(void)
 
 err_class:
 	class_destroy(my_class); /*destroys a struct class structure*/
-/*err_cdev_del:
-	cdev_del(&my_cdev);*/
 err_dealloc:
 	unregister_chrdev_region(first_dev, QUEUE_COUNT);
 err_final:
